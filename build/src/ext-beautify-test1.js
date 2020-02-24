@@ -6,7 +6,7 @@ function is(token, type) {
     return token.type.lastIndexOf(type + ".xml") > -1;
 }
 exports.singletonTags = ["area", "base", "br", "col", "command", "embed", "hr", "html", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"];
-exports.blockTags = ["article", "aside", "blockquote", "body", "div", "dl", "fieldset", "footer", "form", "head", "header", "html", "nav", "ol", "p", "script", "section", "style", "table", "tbody", "tfoot", "thead", "ul"];
+exports.blockTags = ["article", "aside", "blockquote", "body", "div", "dl", "fieldset", "footer", "form", "head", "header", "html", "nav", "ol", "p", "script", "section", "span", "style", "table", "tbody", "tfoot", "thead", "ul"];
 
 exports.beautify = function(session) {
     var iterator = new TokenIterator(session, 0, 0);
