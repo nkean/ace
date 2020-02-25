@@ -21133,136 +21133,137 @@ var FoldMode = exports.FoldMode = function() {};
 
 });
 
-ace.define("ace/theme/textmate",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-"use strict";
+ace.define("ace/theme/one_dark",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-tm";
-exports.cssText = ".ace-tm .ace_gutter {\
-background: #f0f0f0;\
-color: #333;\
+    exports.isDark = true;
+    exports.cssClass = "ace-one-dark";
+    exports.cssText = ".ace-one-dark .ace_gutter {\
+background: #282c34;\
+color: #6a6f7a\
 }\
-.ace-tm .ace_print-margin {\
+.ace-one-dark .ace_print-margin {\
 width: 1px;\
-background: #e8e8e8;\
+background: #e8e8e8\
 }\
-.ace-tm .ace_fold {\
-background-color: #6B72E6;\
+.ace-one-dark {\
+background-color: #282c34;\
+color: #abb2bf\
 }\
-.ace-tm {\
-background-color: #FFFFFF;\
-color: black;\
+.ace-one-dark .ace_cursor {\
+color: #528bff\
 }\
-.ace-tm .ace_cursor {\
-color: black;\
+.ace-one-dark .ace_marker-layer .ace_selection {\
+background: #3d4350\
 }\
-.ace-tm .ace_invisible {\
-color: rgb(191, 191, 191);\
+.ace-one-dark.ace_multiselect .ace_selection.ace_start {\
+box-shadow: 0 0 3px 0 #282c34;\
+border-radius: 2px\
 }\
-.ace-tm .ace_storage,\
-.ace-tm .ace_keyword {\
-color: blue;\
+.ace-one-dark .ace_marker-layer .ace_step {\
+background: #c6dbae\
 }\
-.ace-tm .ace_constant {\
-color: rgb(197, 6, 11);\
-}\
-.ace-tm .ace_constant.ace_buildin {\
-color: rgb(88, 72, 246);\
-}\
-.ace-tm .ace_constant.ace_language {\
-color: rgb(88, 92, 246);\
-}\
-.ace-tm .ace_constant.ace_library {\
-color: rgb(6, 150, 14);\
-}\
-.ace-tm .ace_invalid {\
-background-color: rgba(255, 0, 0, 0.1);\
-color: red;\
-}\
-.ace-tm .ace_support.ace_function {\
-color: rgb(60, 76, 114);\
-}\
-.ace-tm .ace_support.ace_constant {\
-color: rgb(6, 150, 14);\
-}\
-.ace-tm .ace_support.ace_type,\
-.ace-tm .ace_support.ace_class {\
-color: rgb(109, 121, 222);\
-}\
-.ace-tm .ace_keyword.ace_operator {\
-color: rgb(104, 118, 135);\
-}\
-.ace-tm .ace_string {\
-color: rgb(3, 106, 7);\
-}\
-.ace-tm .ace_comment {\
-color: rgb(76, 136, 107);\
-}\
-.ace-tm .ace_comment.ace_doc {\
-color: rgb(0, 102, 255);\
-}\
-.ace-tm .ace_comment.ace_doc.ace_tag {\
-color: rgb(128, 159, 191);\
-}\
-.ace-tm .ace_constant.ace_numeric {\
-color: rgb(0, 0, 205);\
-}\
-.ace-tm .ace_variable {\
-color: rgb(49, 132, 149);\
-}\
-.ace-tm .ace_xml-pe {\
-color: rgb(104, 104, 91);\
-}\
-.ace-tm .ace_entity.ace_name.ace_function {\
-color: #0000A2;\
-}\
-.ace-tm .ace_heading {\
-color: rgb(12, 7, 255);\
-}\
-.ace-tm .ace_list {\
-color:rgb(185, 6, 144);\
-}\
-.ace-tm .ace_meta.ace_tag {\
-color:rgb(0, 22, 142);\
-}\
-.ace-tm .ace_string.ace_regex {\
-color: rgb(255, 0, 0)\
-}\
-.ace-tm .ace_marker-layer .ace_selection {\
-background: rgb(181, 213, 255);\
-}\
-.ace-tm.ace_multiselect .ace_selection.ace_start {\
-box-shadow: 0 0 3px 0px white;\
-}\
-.ace-tm .ace_marker-layer .ace_step {\
-background: rgb(252, 255, 0);\
-}\
-.ace-tm .ace_marker-layer .ace_stack {\
-background: rgb(164, 229, 101);\
-}\
-.ace-tm .ace_marker-layer .ace_bracket {\
+.ace-one-dark .ace_marker-layer .ace_bracket {\
 margin: -1px 0 0 -1px;\
-border: 1px solid rgb(192, 192, 192);\
+border: 1px solid #747369\
 }\
-.ace-tm .ace_marker-layer .ace_active-line {\
-background: rgba(0, 0, 0, 0.07);\
+.ace-one-dark .ace_marker-layer .ace_active-line {\
+background: rgba(76, 87, 103, .19)\
 }\
-.ace-tm .ace_gutter-active-line {\
-background-color : #dcdcdc;\
+.ace-one-dark .ace_gutter-active-line {\
+background-color: rgba(76, 87, 103, .19)\
 }\
-.ace-tm .ace_marker-layer .ace_selected-word {\
-background: rgb(250, 250, 255);\
-border: 1px solid rgb(200, 200, 250);\
+.ace-one-dark .ace_marker-layer .ace_selected-word {\
+border: 1px solid #3d4350\
 }\
-.ace-tm .ace_indent-guide {\
-background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
+.ace-one-dark .ace_fold {\
+background-color: #61afef;\
+border-color: #abb2bf\
 }\
-";
-exports.$id = "ace/theme/textmate";
-
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
-});
+.ace-one-dark .ace_keyword {\
+color: #c678dd\
+}\
+.ace-one-dark .ace_keyword.ace_operator {\
+color: #c678dd\
+}\
+.ace-one-dark .ace_keyword.ace_other.ace_unit {\
+color: #d19a66\
+}\
+.ace-one-dark .ace_constant.ace_language {\
+color: #d19a66\
+}\
+.ace-one-dark .ace_constant.ace_numeric {\
+color: #d19a66\
+}\
+.ace-one-dark .ace_constant.ace_character {\
+color: #56b6c2\
+}\
+.ace-one-dark .ace_constant.ace_other {\
+color: #56b6c2\
+}\
+.ace-one-dark .ace_support.ace_function {\
+color: #61afef\
+}\
+.ace-one-dark .ace_support.ace_constant {\
+color: #d19a66\
+}\
+.ace-one-dark .ace_support.ace_class {\
+color: #e5c07b\
+}\
+.ace-one-dark .ace_support.ace_type {\
+color: #e5c07b\
+}\
+.ace-one-dark .ace_storage {\
+color: #c678dd\
+}\
+.ace-one-dark .ace_storage.ace_type {\
+color: #c678dd\
+}\
+.ace-one-dark .ace_invalid {\
+color: #fff;\
+background-color: #f2777a\
+}\
+.ace-one-dark .ace_invalid.ace_deprecated {\
+color: #272b33;\
+background-color: #d27b53\
+}\
+.ace-one-dark .ace_string {\
+color: #98c379\
+}\
+.ace-one-dark .ace_string.ace_regexp {\
+color: #e06c75\
+}\
+.ace-one-dark .ace_comment {\
+font-style: italic;\
+color: #5c6370\
+}\
+.ace-one-dark .ace_variable {\
+color: #e06c75\
+}\
+.ace-one-dark .ace_variable.ace_parameter {\
+color: #d19a66\
+}\
+.ace-one-dark .ace_meta.ace_tag {\
+color: #e06c75\
+}\
+.ace-one-dark .ace_entity.ace_other.ace_attribute-name {\
+color: #e06c75\
+}\
+.ace-one-dark .ace_entity.ace_name.ace_function {\
+color: #61afef\
+}\
+.ace-one-dark .ace_entity.ace_name.ace_tag {\
+color: #e06c75\
+}\
+.ace-one-dark .ace_markup.ace_heading {\
+color: #98c379\
+}\
+.ace-one-dark .ace_indent-guide {\
+background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWPQ09NrYAgMjP4PAAtGAwchHMyAAAAAAElFTkSuQmCC) right repeat-y\
+}";
+    
+    var dom = require("../lib/dom");
+    dom.importCssString(exports.cssText, exports.cssClass);
+    });
 
 ace.define("ace/line_widgets",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 "use strict";
@@ -21812,7 +21813,7 @@ dom.importCssString("\
 
 });
 
-ace.define("ace/ace",["require","exports","module","ace/lib/fixoldbrowsers","ace/lib/dom","ace/lib/event","ace/range","ace/editor","ace/edit_session","ace/undomanager","ace/virtual_renderer","ace/worker/worker_client","ace/keyboard/hash_handler","ace/placeholder","ace/multi_select","ace/mode/folding/fold_mode","ace/theme/textmate","ace/ext/error_marker","ace/config"], function(require, exports, module) {
+ace.define("ace/ace",["require","exports","module","ace/lib/fixoldbrowsers","ace/lib/dom","ace/lib/event","ace/range","ace/editor","ace/edit_session","ace/undomanager","ace/virtual_renderer","ace/worker/worker_client","ace/keyboard/hash_handler","ace/placeholder","ace/multi_select","ace/mode/folding/fold_mode","ace/theme/one_dark","ace/ext/error_marker","ace/config"], function(require, exports, module) {
 "use strict";
 
 require("./lib/fixoldbrowsers");
@@ -21830,7 +21831,7 @@ require("./keyboard/hash_handler");
 require("./placeholder");
 require("./multi_select");
 require("./mode/folding/fold_mode");
-require("./theme/textmate");
+require("./theme/one_dark");
 require("./ext/error_marker");
 
 exports.config = require("./config");
