@@ -1322,461 +1322,326 @@ exports.Mode = Mode;
 
 });
 
-define("ace/mode/xml_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+define("ace/mode/html_completions",["require","exports","module","ace/token_iterator"], function(require, exports, module) {
 "use strict";
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var TokenIterator = require("../token_iterator").TokenIterator;
 
-var XmlHighlightRules = function(normalize) {
-    var tagRegex = "[_:a-zA-Z\xc0-\uffff][-_:.a-zA-Z0-9\xc0-\uffff]*";
+var commonAttributes = [
+    "accesskey",
+    "class",
+    "contenteditable",
+    "contextmenu",
+    "dir",
+    "draggable",
+    "dropzone",
+    "hidden",
+    "id",
+    "inert",
+    "itemid",
+    "itemprop",
+    "itemref",
+    "itemscope",
+    "itemtype",
+    "lang",
+    "spellcheck",
+    "style",
+    "tabindex",
+    "title",
+    "translate"
+];
 
-    this.$rules = {
-        start : [
-            {token : "string.cdata.xml", regex : "<\\!\\[CDATA\\[", next : "cdata"},
-            {
-                token : ["punctuation.instruction.xml", "keyword.instruction.xml"],
-                regex : "(<\\?)(" + tagRegex + ")", next : "processing_instruction"
-            },
-            {token : "comment.start.xml", regex : "<\\!--", next : "comment"},
-            {
-                token : ["xml-pe.doctype.xml", "xml-pe.doctype.xml"],
-                regex : "(<\\!)(DOCTYPE)(?=[\\s])", next : "doctype", caseInsensitive: true
-            },
-            {include : "tag"},
-            {token : "text.end-tag-open.xml", regex: "</"},
-            {token : "text.tag-open.xml", regex: "<"},
-            {include : "reference"},
-            {defaultToken : "text.xml"}
-        ],
+var eventAttributes = [
+    "onabort",
+    "onblur",
+    "oncancel",
+    "oncanplay",
+    "oncanplaythrough",
+    "onchange",
+    "onclick",
+    "onclose",
+    "oncontextmenu",
+    "oncuechange",
+    "ondblclick",
+    "ondrag",
+    "ondragend",
+    "ondragenter",
+    "ondragleave",
+    "ondragover",
+    "ondragstart",
+    "ondrop",
+    "ondurationchange",
+    "onemptied",
+    "onended",
+    "onerror",
+    "onfocus",
+    "oninput",
+    "oninvalid",
+    "onkeydown",
+    "onkeypress",
+    "onkeyup",
+    "onload",
+    "onloadeddata",
+    "onloadedmetadata",
+    "onloadstart",
+    "onmousedown",
+    "onmousemove",
+    "onmouseout",
+    "onmouseover",
+    "onmouseup",
+    "onmousewheel",
+    "onpause",
+    "onplay",
+    "onplaying",
+    "onprogress",
+    "onratechange",
+    "onreset",
+    "onscroll",
+    "onseeked",
+    "onseeking",
+    "onselect",
+    "onshow",
+    "onstalled",
+    "onsubmit",
+    "onsuspend",
+    "ontimeupdate",
+    "onvolumechange",
+    "onwaiting"
+];
 
-        processing_instruction : [{
-            token : "entity.other.attribute-name.decl-attribute-name.xml",
-            regex : tagRegex
-        }, {
-            token : "keyword.operator.decl-attribute-equals.xml",
-            regex : "="
-        }, {
-            include: "whitespace"
-        }, {
-            include: "string"
-        }, {
-            token : "punctuation.xml-decl.xml",
-            regex : "\\?>",
-            next : "start"
-        }],
+var globalAttributes = commonAttributes.concat(eventAttributes);
 
-        doctype : [
-            {include : "whitespace"},
-            {include : "string"},
-            {token : "xml-pe.doctype.xml", regex : ">", next : "start"},
-            {token : "xml-pe.xml", regex : "[-_a-zA-Z0-9:]+"},
-            {token : "punctuation.int-subset", regex : "\\[", push : "int_subset"}
-        ],
-
-        int_subset : [{
-            token : "text.xml",
-            regex : "\\s+"
-        }, {
-            token: "punctuation.int-subset.xml",
-            regex: "]",
-            next: "pop"
-        }, {
-            token : ["punctuation.markup-decl.xml", "keyword.markup-decl.xml"],
-            regex : "(<\\!)(" + tagRegex + ")",
-            push : [{
-                token : "text",
-                regex : "\\s+"
-            },
-            {
-                token : "punctuation.markup-decl.xml",
-                regex : ">",
-                next : "pop"
-            },
-            {include : "string"}]
-        }],
-
-        cdata : [
-            {token : "string.cdata.xml", regex : "\\]\\]>", next : "start"},
-            {token : "text.xml", regex : "\\s+"},
-            {token : "text.xml", regex : "(?:[^\\]]|\\](?!\\]>))+"}
-        ],
-
-        comment : [
-            {token : "comment.end.xml", regex : "-->", next : "start"},
-            {defaultToken : "comment.xml"}
-        ],
-
-        reference : [{
-            token : "constant.language.escape.reference.xml",
-            regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
-        }],
-
-        attr_reference : [{
-            token : "constant.language.escape.reference.attribute-value.xml",
-            regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
-        }],
-
-        tag : [{
-            token : ["meta.tag.punctuation.tag-open.xml", "meta.tag.punctuation.end-tag-open.xml", "meta.tag.tag-name.xml"],
-            regex : "(?:(<)|(</))((?:" + tagRegex + ":)?" + tagRegex + ")",
-            next: [
-                {include : "attributes"},
-                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
-            ]
-        }],
-
-        tag_whitespace : [
-            {token : "text.tag-whitespace.xml", regex : "\\s+"}
-        ],
-        whitespace : [
-            {token : "text.whitespace.xml", regex : "\\s+"}
-        ],
-        string: [{
-            token : "string.xml",
-            regex : "'",
-            push : [
-                {token : "string.xml", regex: "'", next: "pop"},
-                {defaultToken : "string.xml"}
-            ]
-        }, {
-            token : "string.xml",
-            regex : '"',
-            push : [
-                {token : "string.xml", regex: '"', next: "pop"},
-                {defaultToken : "string.xml"}
-            ]
-        }],
-
-        attributes: [{
-            token : "entity.other.attribute-name.xml",
-            regex : tagRegex
-        }, {
-            token : "keyword.operator.attribute-equals.xml",
-            regex : "="
-        }, {
-            include: "tag_whitespace"
-        }, {
-            include: "attribute_value"
-        }],
-
-        attribute_value: [{
-            token : "string.attribute-value.xml",
-            regex : "'",
-            push : [
-                {token : "string.attribute-value.xml", regex: "'", next: "pop"},
-                {include : "attr_reference"},
-                {defaultToken : "string.attribute-value.xml"}
-            ]
-        }, {
-            token : "string.attribute-value.xml",
-            regex : '"',
-            push : [
-                {token : "string.attribute-value.xml", regex: '"', next: "pop"},
-                {include : "attr_reference"},
-                {defaultToken : "string.attribute-value.xml"}
-            ]
-        }]
-    };
-
-    if (this.constructor === XmlHighlightRules)
-        this.normalizeRules();
+var attributeMap = {
+    "a": {"href": 1, "target": {"_blank": 1, "top": 1}, "ping": 1, "rel": {"nofollow": 1, "alternate": 1, "author": 1, "bookmark": 1, "help": 1, "license": 1, "next": 1, "noreferrer": 1, "prefetch": 1, "prev": 1, "search": 1, "tag": 1}, "media": 1, "hreflang": 1, "type": 1},
+    "abbr": {},
+    "address": {},
+    "area": {"shape": 1, "coords": 1, "href": 1, "hreflang": 1, "alt": 1, "target": 1, "media": 1, "rel": 1, "ping": 1, "type": 1},
+    "article": {"pubdate": 1},
+    "aside": {},
+    "audio": {"src": 1, "autobuffer": 1, "autoplay": {"autoplay": 1}, "loop": {"loop": 1}, "controls": {"controls": 1}, "muted": {"muted": 1}, "preload": {"auto": 1, "metadata": 1, "none": 1 }},
+    "b": {},
+    "base": {"href": 1, "target": 1},
+    "bdi": {},
+    "bdo": {},
+    "blockquote": {"cite": 1},
+    "body": {"onafterprint": 1, "onbeforeprint": 1, "onbeforeunload": 1, "onhashchange": 1, "onmessage": 1, "onoffline": 1, "onpopstate": 1, "onredo": 1, "onresize": 1, "onstorage": 1, "onundo": 1, "onunload": 1},
+    "br": {},
+    "button": {"autofocus": 1, "disabled": {"disabled": 1}, "form": 1, "formaction": 1, "formenctype": 1, "formmethod": 1, "formnovalidate": 1, "formtarget": 1, "name": 1, "value": 1, "type": {"button": 1, "submit": 1}},
+    "canvas": {"width": 1, "height": 1},
+    "caption": {},
+    "cite": {},
+    "code": {},
+    "col": {"span": 1},
+    "colgroup": {"span": 1},
+    "command": {"type": 1, "label": 1, "icon": 1, "disabled": 1, "checked": 1, "radiogroup": 1, "command": 1},
+    "data": {},
+    "datalist": {},
+    "dd": {},
+    "del": {"cite": 1, "datetime": 1},
+    "details": {"open": 1},
+    "dfn": {},
+    "dialog": {"open": 1},
+    "div": {},
+    "dl": {},
+    "dt": {},
+    "em": {},
+    "embed": {"src": 1, "height": 1, "width": 1, "type": 1},
+    "fieldset": {"disabled": 1, "form": 1, "name": 1},
+    "figcaption": {},
+    "figure": {},
+    "footer": {},
+    "form": {"accept-charset": 1, "action": 1, "autocomplete": 1, "enctype": {"multipart/form-data": 1, "application/x-www-form-urlencoded": 1}, "method": {"get": 1, "post": 1}, "name": 1, "novalidate": 1, "target": {"_blank": 1, "top": 1}},
+    "h1": {},
+    "h2": {},
+    "h3": {},
+    "h4": {},
+    "h5": {},
+    "h6": {},
+    "head": {},
+    "header": {},
+    "hr": {},
+    "html": {"manifest": 1},
+    "i": {},
+    "iframe": {"name": 1, "src": 1, "height": 1, "width": 1, "sandbox": {"allow-same-origin": 1, "allow-top-navigation": 1, "allow-forms": 1, "allow-scripts": 1}, "seamless": {"seamless": 1}},
+    "img": {"alt": 1, "src": 1, "height": 1, "width": 1, "usemap": 1, "ismap": 1},
+    "input": {
+        "type": {"text": 1, "password": 1, "hidden": 1, "checkbox": 1, "submit": 1, "radio": 1, "file": 1, "button": 1, "reset": 1, "image": 31, "color": 1, "date": 1, "datetime": 1, "datetime-local": 1, "email": 1, "month": 1, "number": 1, "range": 1, "search": 1, "tel": 1, "time": 1, "url": 1, "week": 1},
+        "accept": 1, "alt": 1, "autocomplete": {"on": 1, "off": 1}, "autofocus": {"autofocus": 1}, "checked": {"checked": 1}, "disabled": {"disabled": 1}, "form": 1, "formaction": 1, "formenctype": {"application/x-www-form-urlencoded": 1, "multipart/form-data": 1, "text/plain": 1}, "formmethod": {"get": 1, "post": 1}, "formnovalidate": {"formnovalidate": 1}, "formtarget": {"_blank": 1, "_self": 1, "_parent": 1, "_top": 1}, "height": 1, "list": 1, "max": 1, "maxlength": 1, "min": 1, "multiple": {"multiple": 1}, "name": 1, "pattern": 1, "placeholder": 1, "readonly": {"readonly": 1}, "required": {"required": 1}, "size": 1, "src": 1, "step": 1, "width": 1, "files": 1, "value": 1},
+    "ins": {"cite": 1, "datetime": 1},
+    "kbd": {},
+    "keygen": {"autofocus": 1, "challenge": {"challenge": 1}, "disabled": {"disabled": 1}, "form": 1, "keytype": {"rsa": 1, "dsa": 1, "ec": 1}, "name": 1},
+    "label": {"form": 1, "for": 1},
+    "legend": {},
+    "li": {"value": 1},
+    "link": {"href": 1, "hreflang": 1, "rel": {"stylesheet": 1, "icon": 1}, "media": {"all": 1, "screen": 1, "print": 1}, "type": {"text/css": 1, "image/png": 1, "image/jpeg": 1, "image/gif": 1}, "sizes": 1},
+    "main": {},
+    "map": {"name": 1},
+    "mark": {},
+    "math": {},
+    "menu": {"type": 1, "label": 1},
+    "meta": {"http-equiv": {"content-type": 1}, "name": {"description": 1, "keywords": 1}, "content": {"text/html; charset=UTF-8": 1}, "charset": 1},
+    "meter": {"value": 1, "min": 1, "max": 1, "low": 1, "high": 1, "optimum": 1},
+    "nav": {},
+    "noscript": {"href": 1},
+    "object": {"param": 1, "data": 1, "type": 1, "height" : 1, "width": 1, "usemap": 1, "name": 1, "form": 1, "classid": 1},
+    "ol": {"start": 1, "reversed": 1},
+    "optgroup": {"disabled": 1, "label": 1},
+    "option": {"disabled": 1, "selected": 1, "label": 1, "value": 1},
+    "output": {"for": 1, "form": 1, "name": 1},
+    "p": {},
+    "param": {"name": 1, "value": 1},
+    "pre": {},
+    "progress": {"value": 1, "max": 1},
+    "q": {"cite": 1},
+    "rp": {},
+    "rt": {},
+    "ruby": {},
+    "s": {},
+    "samp": {},
+    "script": {"charset": 1, "type": {"text/javascript": 1}, "src": 1, "defer": 1, "async": 1},
+    "select": {"autofocus": 1, "disabled": 1, "form": 1, "multiple": {"multiple": 1}, "name": 1, "size": 1, "readonly":{"readonly": 1}},
+    "small": {},
+    "source": {"src": 1, "type": 1, "media": 1},
+    "span": {},
+    "strong": {},
+    "style": {"type": 1, "media": {"all": 1, "screen": 1, "print": 1}, "scoped": 1},
+    "sub": {},
+    "sup": {},
+    "svg": {},
+    "table": {"summary": 1},
+    "tbody": {},
+    "td": {"headers": 1, "rowspan": 1, "colspan": 1},
+    "textarea": {"autofocus": {"autofocus": 1}, "disabled": {"disabled": 1}, "form": 1, "maxlength": 1, "name": 1, "placeholder": 1, "readonly": {"readonly": 1}, "required": {"required": 1}, "rows": 1, "cols": 1, "wrap": {"on": 1, "off": 1, "hard": 1, "soft": 1}},
+    "tfoot": {},
+    "th": {"headers": 1, "rowspan": 1, "colspan": 1, "scope": 1},
+    "thead": {},
+    "time": {"datetime": 1},
+    "title": {},
+    "tr": {},
+    "track": {"kind": 1, "src": 1, "srclang": 1, "label": 1, "default": 1},
+    "section": {},
+    "summary": {},
+    "u": {},
+    "ul": {},
+    "var": {},
+    "video": {"src": 1, "autobuffer": 1, "autoplay": {"autoplay": 1}, "loop": {"loop": 1}, "controls": {"controls": 1}, "width": 1, "height": 1, "poster": 1, "muted": {"muted": 1}, "preload": {"auto": 1, "metadata": 1, "none": 1}},
+    "wbr": {}
 };
 
+var elements = Object.keys(attributeMap);
+
+function is(token, type) {
+    return token.type.lastIndexOf(type + ".xml") > -1;
+}
+
+function findTagName(session, pos) {
+    var iterator = new TokenIterator(session, pos.row, pos.column);
+    var token = iterator.getCurrentToken();
+    while (token && !is(token, "tag-name")){
+        token = iterator.stepBackward();
+    }
+    if (token)
+        return token.value;
+}
+
+function findAttributeName(session, pos) {
+    var iterator = new TokenIterator(session, pos.row, pos.column);
+    var token = iterator.getCurrentToken();
+    while (token && !is(token, "attribute-name")){
+        token = iterator.stepBackward();
+    }
+    if (token)
+        return token.value;
+}
+
+var HtmlCompletions = function() {
+
+};
 
 (function() {
 
-    this.embedTagRules = function(HighlightRules, prefix, tag){
-        this.$rules.tag.unshift({
-            token : ["meta.tag.punctuation.tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
-            regex : "(<)(" + tag + "(?=\\s|>|$))",
-            next: [
-                {include : "attributes"},
-                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : prefix + "start"}
-            ]
-        });
+    this.getCompletions = function(state, session, pos, prefix) {
+        var token = session.getTokenAt(pos.row, pos.column);
 
-        this.$rules[tag + "-end"] = [
-            {include : "attributes"},
-            {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>",  next: "start",
-                onMatch : function(value, currentState, stack) {
-                    stack.splice(0);
-                    return this.token;
-            }}
-        ];
+        if (!token)
+            return [];
+        if (is(token, "tag-name") || is(token, "tag-open") || is(token, "end-tag-open"))
+            return this.getTagCompletions(state, session, pos, prefix);
+        if (is(token, "tag-whitespace") || is(token, "attribute-name"))
+            return this.getAttributeCompletions(state, session, pos, prefix);
+        if (is(token, "attribute-value"))
+            return this.getAttributeValueCompletions(state, session, pos, prefix);
+        var line = session.getLine(pos.row).substr(0, pos.column);
+        if (/&[a-z]*$/i.test(line))
+            return this.getHTMLEntityCompletions(state, session, pos, prefix);
 
-        this.embedRules(HighlightRules, prefix, [{
-            token: ["meta.tag.punctuation.end-tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
-            regex : "(</)(" + tag + "(?=\\s|>|$))",
-            next: tag + "-end"
-        }, {
-            token: "string.cdata.xml",
-            regex : "<\\!\\[CDATA\\["
-        }, {
-            token: "string.cdata.xml",
-            regex : "\\]\\]>"
-        }]);
+        return [];
     };
 
-}).call(TextHighlightRules.prototype);
-
-oop.inherits(XmlHighlightRules, TextHighlightRules);
-
-exports.XmlHighlightRules = XmlHighlightRules;
-});
-
-define("ace/mode/html_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/css_highlight_rules","ace/mode/javascript_highlight_rules","ace/mode/xml_highlight_rules"], function(require, exports, module) {
-"use strict";
-
-var oop = require("../lib/oop");
-var lang = require("../lib/lang");
-var CssHighlightRules = require("./css_highlight_rules").CssHighlightRules;
-var JavaScriptHighlightRules = require("./javascript_highlight_rules").JavaScriptHighlightRules;
-var XmlHighlightRules = require("./xml_highlight_rules").XmlHighlightRules;
-
-var tagMap = lang.createMap({
-    a           : 'anchor',
-    button 	    : 'form',
-    form        : 'form',
-    img         : 'image',
-    input       : 'form',
-    label       : 'form',
-    option      : 'form',
-    script      : 'script',
-    select      : 'form',
-    textarea    : 'form',
-    style       : 'style',
-    table       : 'table',
-    tbody       : 'table',
-    td          : 'table',
-    tfoot       : 'table',
-    th          : 'table',
-    tr          : 'table'
-});
-
-var HtmlHighlightRules = function() {
-    XmlHighlightRules.call(this);
-
-    this.addRules({
-        attributes: [{
-            include : "tag_whitespace"
-        }, {
-            token : "entity.other.attribute-name.xml",
-            regex : "[-_a-zA-Z0-9:.]+"
-        }, {
-            token : "keyword.operator.attribute-equals.xml",
-            regex : "=",
-            push : [{
-                include: "tag_whitespace"
-            }, {
-                token : "string.unquoted.attribute-value.html",
-                regex : "[^<>='\"`\\s]+",
-                next : "pop"
-            }, {
-                token : "empty",
-                regex : "",
-                next : "pop"
-            }]
-        }, {
-            include : "attribute_value"
-        }],
-        tag: [{
-            token : function(start, tag) {
-                var group = tagMap[tag];
-                return ["meta.tag.punctuation." + (start == "<" ? "" : "end-") + "tag-open.xml",
-                    "meta.tag" + (group ? "." + group : "") + ".tag-name.xml"];
-            },
-            regex : "(</?)([-_a-zA-Z0-9:.]+)",
-            next: "tag_stuff"
-        }],
-        tag_stuff: [
-            {include : "attributes"},
-            {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
-        ]
-    });
-
-    this.embedTagRules(CssHighlightRules, "css-", "style");
-    this.embedTagRules(new JavaScriptHighlightRules({jsx: false}).getRules(), "js-", "script");
-
-    if (this.constructor === HtmlHighlightRules)
-        this.normalizeRules();
-};
-
-oop.inherits(HtmlHighlightRules, XmlHighlightRules);
-
-exports.HtmlHighlightRules = HtmlHighlightRules;
-});
-
-define("ace/mode/behaviour/xml",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
-"use strict";
-
-var oop = require("../../lib/oop");
-var Behaviour = require("../behaviour").Behaviour;
-var TokenIterator = require("../../token_iterator").TokenIterator;
-var lang = require("../../lib/lang");
-
-function is(token, type) {
-    return token && token.type.lastIndexOf(type + ".xml") > -1;
-}
-
-var XmlBehaviour = function () {
-
-    this.add("string_dquotes", "insertion", function (state, action, editor, session, text) {
-        if (text == '"' || text == "'") {
-            var quote = text;
-            var selected = session.doc.getTextRange(editor.getSelectionRange());
-            if (selected !== "" && selected !== "'" && selected != '"' && editor.getWrapBehavioursEnabled()) {
-                return {
-                    text: quote + selected + quote,
-                    selection: false
-                };
-            }
-
-            var cursor = editor.getCursorPosition();
-            var line = session.doc.getLine(cursor.row);
-            var rightChar = line.substring(cursor.column, cursor.column + 1);
-            var iterator = new TokenIterator(session, cursor.row, cursor.column);
-            var token = iterator.getCurrentToken();
-
-            if (rightChar == quote && (is(token, "attribute-value") || is(token, "string"))) {
-                return {
-                    text: "",
-                    selection: [1, 1]
-                };
-            }
-
-            if (!token)
-                token = iterator.stepBackward();
-
-            if (!token)
-                return;
-
-            while (is(token, "tag-whitespace") || is(token, "whitespace")) {
-                token = iterator.stepBackward();
-            }
-            var rightSpace = !rightChar || rightChar.match(/\s/);
-            if (is(token, "attribute-equals") && (rightSpace || rightChar == '>') || (is(token, "decl-attribute-equals") && (rightSpace || rightChar == '?'))) {
-                return {
-                    text: quote + quote,
-                    selection: [1, 1]
-                };
-            }
-        }
-    });
-
-    this.add("string_dquotes", "deletion", function(state, action, editor, session, range) {
-        var selected = session.doc.getTextRange(range);
-        if (!range.isMultiLine() && (selected == '"' || selected == "'")) {
-            var line = session.doc.getLine(range.start.row);
-            var rightChar = line.substring(range.start.column + 1, range.start.column + 2);
-            if (rightChar == selected) {
-                range.end.column++;
-                return range;
-            }
-        }
-    });
-
-    this.add("autoclosing", "insertion", function (state, action, editor, session, text) {
-        if (text == '>') {
-            var position = editor.getSelectionRange().start;
-            var iterator = new TokenIterator(session, position.row, position.column);
-            var token = iterator.getCurrentToken() || iterator.stepBackward();
-            if (!token || !(is(token, "tag-name") || is(token, "tag-whitespace") || is(token, "attribute-name") || is(token, "attribute-equals") || is(token, "attribute-value")))
-                return;
-            if (is(token, "reference.attribute-value"))
-                return;
-            if (is(token, "attribute-value")) {
-                var tokenEndColumn = iterator.getCurrentTokenColumn() + token.value.length;
-                if (position.column < tokenEndColumn)
-                    return;
-                if (position.column == tokenEndColumn) {
-                    var nextToken = iterator.stepForward();
-                    if (nextToken && is(nextToken, "attribute-value"))
-                        return;
-                    iterator.stepBackward();
-                }
-            }
-            
-            if (/^\s*>/.test(session.getLine(position.row).slice(position.column)))
-                return;
-            while (!is(token, "tag-name")) {
-                token = iterator.stepBackward();
-                if (token.value == "<") {
-                    token = iterator.stepForward();
-                    break;
-                }
-            }
-
-            var tokenRow = iterator.getCurrentTokenRow();
-            var tokenColumn = iterator.getCurrentTokenColumn();
-            if (is(iterator.stepBackward(), "end-tag-open"))
-                return;
-
-            var element = token.value;
-            if (tokenRow == position.row)
-                element = element.substring(0, position.column - tokenColumn);
-
-            if (this.voidElements.hasOwnProperty(element.toLowerCase()))
-                 return;
-
+    this.getTagCompletions = function(state, session, pos, prefix) {
+        return elements.map(function(element){
             return {
-               text: ">" + "</" + element + ">",
-               selection: [1, 1]
+                value: element,
+                meta: "tag",
+                score: 1000000
             };
+        });
+    };
+
+    this.getAttributeCompletions = function(state, session, pos, prefix) {
+        var tagName = findTagName(session, pos);
+        if (!tagName)
+            return [];
+        var attributes = globalAttributes;
+        if (tagName in attributeMap) {
+            attributes = attributes.concat(Object.keys(attributeMap[tagName]));
         }
-    });
+        return attributes.map(function(attribute){
+            return {
+                caption: attribute,
+                snippet: attribute + '="$0"',
+                meta: "attribute",
+                score: 1000000
+            };
+        });
+    };
 
-    this.add("autoindent", "insertion", function (state, action, editor, session, text) {
-        if (text == "\n") {
-            var cursor = editor.getCursorPosition();
-            var line = session.getLine(cursor.row);
-            var iterator = new TokenIterator(session, cursor.row, cursor.column);
-            var token = iterator.getCurrentToken();
-
-            if (token && token.type.indexOf("tag-close") !== -1) {
-                if (token.value == "/>")
-                    return;
-                while (token && token.type.indexOf("tag-name") === -1) {
-                    token = iterator.stepBackward();
-                }
-
-                if (!token) {
-                    return;
-                }
-
-                var tag = token.value;
-                var row = iterator.getCurrentTokenRow();
-                token = iterator.stepBackward();
-                if (!token || token.type.indexOf("end-tag") !== -1) {
-                    return;
-                }
-
-                if (this.voidElements && !this.voidElements[tag]) {
-                    var nextToken = session.getTokenAt(cursor.row, cursor.column+1);
-                    var line = session.getLine(row);
-                    var nextIndent = this.$getIndent(line);
-                    var indent = nextIndent + session.getTabString();
-
-                    if (nextToken && nextToken.value === "</") {
-                        return {
-                            text: "\n" + indent + "\n" + nextIndent,
-                            selection: [1, indent.length, 1, indent.length]
-                        };
-                    } else {
-                        return {
-                            text: "\n" + indent
-                        };
-                    }
-                }
-            }
+    this.getAttributeValueCompletions = function(state, session, pos, prefix) {
+        var tagName = findTagName(session, pos);
+        var attributeName = findAttributeName(session, pos);
+        
+        if (!tagName)
+            return [];
+        var values = [];
+        if (tagName in attributeMap && attributeName in attributeMap[tagName] && typeof attributeMap[tagName][attributeName] === "object") {
+            values = Object.keys(attributeMap[tagName][attributeName]);
         }
-    });
+        return values.map(function(value){
+            return {
+                caption: value,
+                snippet: value,
+                meta: "attribute value",
+                score: 1000000
+            };
+        });
+    };
 
-};
+    this.getHTMLEntityCompletions = function(state, session, pos, prefix) {
+        var values = ['Aacute;', 'aacute;', 'Acirc;', 'acirc;', 'acute;', 'AElig;', 'aelig;', 'Agrave;', 'agrave;', 'alefsym;', 'Alpha;', 'alpha;', 'amp;', 'and;', 'ang;', 'Aring;', 'aring;', 'asymp;', 'Atilde;', 'atilde;', 'Auml;', 'auml;', 'bdquo;', 'Beta;', 'beta;', 'brvbar;', 'bull;', 'cap;', 'Ccedil;', 'ccedil;', 'cedil;', 'cent;', 'Chi;', 'chi;', 'circ;', 'clubs;', 'cong;', 'copy;', 'crarr;', 'cup;', 'curren;', 'Dagger;', 'dagger;', 'dArr;', 'darr;', 'deg;', 'Delta;', 'delta;', 'diams;', 'divide;', 'Eacute;', 'eacute;', 'Ecirc;', 'ecirc;', 'Egrave;', 'egrave;', 'empty;', 'emsp;', 'ensp;', 'Epsilon;', 'epsilon;', 'equiv;', 'Eta;', 'eta;', 'ETH;', 'eth;', 'Euml;', 'euml;', 'euro;', 'exist;', 'fnof;', 'forall;', 'frac12;', 'frac14;', 'frac34;', 'frasl;', 'Gamma;', 'gamma;', 'ge;', 'gt;', 'hArr;', 'harr;', 'hearts;', 'hellip;', 'Iacute;', 'iacute;', 'Icirc;', 'icirc;', 'iexcl;', 'Igrave;', 'igrave;', 'image;', 'infin;', 'int;', 'Iota;', 'iota;', 'iquest;', 'isin;', 'Iuml;', 'iuml;', 'Kappa;', 'kappa;', 'Lambda;', 'lambda;', 'lang;', 'laquo;', 'lArr;', 'larr;', 'lceil;', 'ldquo;', 'le;', 'lfloor;', 'lowast;', 'loz;', 'lrm;', 'lsaquo;', 'lsquo;', 'lt;', 'macr;', 'mdash;', 'micro;', 'middot;', 'minus;', 'Mu;', 'mu;', 'nabla;', 'nbsp;', 'ndash;', 'ne;', 'ni;', 'not;', 'notin;', 'nsub;', 'Ntilde;', 'ntilde;', 'Nu;', 'nu;', 'Oacute;', 'oacute;', 'Ocirc;', 'ocirc;', 'OElig;', 'oelig;', 'Ograve;', 'ograve;', 'oline;', 'Omega;', 'omega;', 'Omicron;', 'omicron;', 'oplus;', 'or;', 'ordf;', 'ordm;', 'Oslash;', 'oslash;', 'Otilde;', 'otilde;', 'otimes;', 'Ouml;', 'ouml;', 'para;', 'part;', 'permil;', 'perp;', 'Phi;', 'phi;', 'Pi;', 'pi;', 'piv;', 'plusmn;', 'pound;', 'Prime;', 'prime;', 'prod;', 'prop;', 'Psi;', 'psi;', 'quot;', 'radic;', 'rang;', 'raquo;', 'rArr;', 'rarr;', 'rceil;', 'rdquo;', 'real;', 'reg;', 'rfloor;', 'Rho;', 'rho;', 'rlm;', 'rsaquo;', 'rsquo;', 'sbquo;', 'Scaron;', 'scaron;', 'sdot;', 'sect;', 'shy;', 'Sigma;', 'sigma;', 'sigmaf;', 'sim;', 'spades;', 'sub;', 'sube;', 'sum;', 'sup;', 'sup1;', 'sup2;', 'sup3;', 'supe;', 'szlig;', 'Tau;', 'tau;', 'there4;', 'Theta;', 'theta;', 'thetasym;', 'thinsp;', 'THORN;', 'thorn;', 'tilde;', 'times;', 'trade;', 'Uacute;', 'uacute;', 'uArr;', 'uarr;', 'Ucirc;', 'ucirc;', 'Ugrave;', 'ugrave;', 'uml;', 'upsih;', 'Upsilon;', 'upsilon;', 'Uuml;', 'uuml;', 'weierp;', 'Xi;', 'xi;', 'Yacute;', 'yacute;', 'yen;', 'Yuml;', 'yuml;', 'Zeta;', 'zeta;', 'zwj;', 'zwnj;'];
 
-oop.inherits(XmlBehaviour, Behaviour);
+        return values.map(function(value){
+            return {
+                caption: value,
+                snippet: value,
+                meta: "html entity",
+                score: 1000000
+            };
+        });
+    };
 
-exports.XmlBehaviour = XmlBehaviour;
+}).call(HtmlCompletions.prototype);
+
+exports.HtmlCompletions = HtmlCompletions;
 });
 
 define("ace/mode/folding/mixed",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode"], function(require, exports, module) {
@@ -2101,401 +1966,176 @@ oop.inherits(FoldMode, MixedFoldMode);
 
 });
 
-define("ace/mode/html_completions",["require","exports","module","ace/token_iterator"], function(require, exports, module) {
+define("ace/mode/behaviour/xml",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
 "use strict";
 
-var TokenIterator = require("../token_iterator").TokenIterator;
-
-var commonAttributes = [
-    "accesskey",
-    "class",
-    "contenteditable",
-    "contextmenu",
-    "dir",
-    "draggable",
-    "dropzone",
-    "hidden",
-    "id",
-    "inert",
-    "itemid",
-    "itemprop",
-    "itemref",
-    "itemscope",
-    "itemtype",
-    "lang",
-    "spellcheck",
-    "style",
-    "tabindex",
-    "title",
-    "translate"
-];
-
-var eventAttributes = [
-    "onabort",
-    "onblur",
-    "oncancel",
-    "oncanplay",
-    "oncanplaythrough",
-    "onchange",
-    "onclick",
-    "onclose",
-    "oncontextmenu",
-    "oncuechange",
-    "ondblclick",
-    "ondrag",
-    "ondragend",
-    "ondragenter",
-    "ondragleave",
-    "ondragover",
-    "ondragstart",
-    "ondrop",
-    "ondurationchange",
-    "onemptied",
-    "onended",
-    "onerror",
-    "onfocus",
-    "oninput",
-    "oninvalid",
-    "onkeydown",
-    "onkeypress",
-    "onkeyup",
-    "onload",
-    "onloadeddata",
-    "onloadedmetadata",
-    "onloadstart",
-    "onmousedown",
-    "onmousemove",
-    "onmouseout",
-    "onmouseover",
-    "onmouseup",
-    "onmousewheel",
-    "onpause",
-    "onplay",
-    "onplaying",
-    "onprogress",
-    "onratechange",
-    "onreset",
-    "onscroll",
-    "onseeked",
-    "onseeking",
-    "onselect",
-    "onshow",
-    "onstalled",
-    "onsubmit",
-    "onsuspend",
-    "ontimeupdate",
-    "onvolumechange",
-    "onwaiting"
-];
-
-var globalAttributes = commonAttributes.concat(eventAttributes);
-
-var attributeMap = {
-    "a": {"href": 1, "target": {"_blank": 1, "top": 1}, "ping": 1, "rel": {"nofollow": 1, "alternate": 1, "author": 1, "bookmark": 1, "help": 1, "license": 1, "next": 1, "noreferrer": 1, "prefetch": 1, "prev": 1, "search": 1, "tag": 1}, "media": 1, "hreflang": 1, "type": 1},
-    "abbr": {},
-    "address": {},
-    "area": {"shape": 1, "coords": 1, "href": 1, "hreflang": 1, "alt": 1, "target": 1, "media": 1, "rel": 1, "ping": 1, "type": 1},
-    "article": {"pubdate": 1},
-    "aside": {},
-    "audio": {"src": 1, "autobuffer": 1, "autoplay": {"autoplay": 1}, "loop": {"loop": 1}, "controls": {"controls": 1}, "muted": {"muted": 1}, "preload": {"auto": 1, "metadata": 1, "none": 1 }},
-    "b": {},
-    "base": {"href": 1, "target": 1},
-    "bdi": {},
-    "bdo": {},
-    "blockquote": {"cite": 1},
-    "body": {"onafterprint": 1, "onbeforeprint": 1, "onbeforeunload": 1, "onhashchange": 1, "onmessage": 1, "onoffline": 1, "onpopstate": 1, "onredo": 1, "onresize": 1, "onstorage": 1, "onundo": 1, "onunload": 1},
-    "br": {},
-    "button": {"autofocus": 1, "disabled": {"disabled": 1}, "form": 1, "formaction": 1, "formenctype": 1, "formmethod": 1, "formnovalidate": 1, "formtarget": 1, "name": 1, "value": 1, "type": {"button": 1, "submit": 1}},
-    "canvas": {"width": 1, "height": 1},
-    "caption": {},
-    "cite": {},
-    "code": {},
-    "col": {"span": 1},
-    "colgroup": {"span": 1},
-    "command": {"type": 1, "label": 1, "icon": 1, "disabled": 1, "checked": 1, "radiogroup": 1, "command": 1},
-    "data": {},
-    "datalist": {},
-    "dd": {},
-    "del": {"cite": 1, "datetime": 1},
-    "details": {"open": 1},
-    "dfn": {},
-    "dialog": {"open": 1},
-    "div": {},
-    "dl": {},
-    "dt": {},
-    "em": {},
-    "embed": {"src": 1, "height": 1, "width": 1, "type": 1},
-    "fieldset": {"disabled": 1, "form": 1, "name": 1},
-    "figcaption": {},
-    "figure": {},
-    "footer": {},
-    "form": {"accept-charset": 1, "action": 1, "autocomplete": 1, "enctype": {"multipart/form-data": 1, "application/x-www-form-urlencoded": 1}, "method": {"get": 1, "post": 1}, "name": 1, "novalidate": 1, "target": {"_blank": 1, "top": 1}},
-    "h1": {},
-    "h2": {},
-    "h3": {},
-    "h4": {},
-    "h5": {},
-    "h6": {},
-    "head": {},
-    "header": {},
-    "hr": {},
-    "html": {"manifest": 1},
-    "i": {},
-    "iframe": {"name": 1, "src": 1, "height": 1, "width": 1, "sandbox": {"allow-same-origin": 1, "allow-top-navigation": 1, "allow-forms": 1, "allow-scripts": 1}, "seamless": {"seamless": 1}},
-    "img": {"alt": 1, "src": 1, "height": 1, "width": 1, "usemap": 1, "ismap": 1},
-    "input": {
-        "type": {"text": 1, "password": 1, "hidden": 1, "checkbox": 1, "submit": 1, "radio": 1, "file": 1, "button": 1, "reset": 1, "image": 31, "color": 1, "date": 1, "datetime": 1, "datetime-local": 1, "email": 1, "month": 1, "number": 1, "range": 1, "search": 1, "tel": 1, "time": 1, "url": 1, "week": 1},
-        "accept": 1, "alt": 1, "autocomplete": {"on": 1, "off": 1}, "autofocus": {"autofocus": 1}, "checked": {"checked": 1}, "disabled": {"disabled": 1}, "form": 1, "formaction": 1, "formenctype": {"application/x-www-form-urlencoded": 1, "multipart/form-data": 1, "text/plain": 1}, "formmethod": {"get": 1, "post": 1}, "formnovalidate": {"formnovalidate": 1}, "formtarget": {"_blank": 1, "_self": 1, "_parent": 1, "_top": 1}, "height": 1, "list": 1, "max": 1, "maxlength": 1, "min": 1, "multiple": {"multiple": 1}, "name": 1, "pattern": 1, "placeholder": 1, "readonly": {"readonly": 1}, "required": {"required": 1}, "size": 1, "src": 1, "step": 1, "width": 1, "files": 1, "value": 1},
-    "ins": {"cite": 1, "datetime": 1},
-    "kbd": {},
-    "keygen": {"autofocus": 1, "challenge": {"challenge": 1}, "disabled": {"disabled": 1}, "form": 1, "keytype": {"rsa": 1, "dsa": 1, "ec": 1}, "name": 1},
-    "label": {"form": 1, "for": 1},
-    "legend": {},
-    "li": {"value": 1},
-    "link": {"href": 1, "hreflang": 1, "rel": {"stylesheet": 1, "icon": 1}, "media": {"all": 1, "screen": 1, "print": 1}, "type": {"text/css": 1, "image/png": 1, "image/jpeg": 1, "image/gif": 1}, "sizes": 1},
-    "main": {},
-    "map": {"name": 1},
-    "mark": {},
-    "math": {},
-    "menu": {"type": 1, "label": 1},
-    "meta": {"http-equiv": {"content-type": 1}, "name": {"description": 1, "keywords": 1}, "content": {"text/html; charset=UTF-8": 1}, "charset": 1},
-    "meter": {"value": 1, "min": 1, "max": 1, "low": 1, "high": 1, "optimum": 1},
-    "nav": {},
-    "noscript": {"href": 1},
-    "object": {"param": 1, "data": 1, "type": 1, "height" : 1, "width": 1, "usemap": 1, "name": 1, "form": 1, "classid": 1},
-    "ol": {"start": 1, "reversed": 1},
-    "optgroup": {"disabled": 1, "label": 1},
-    "option": {"disabled": 1, "selected": 1, "label": 1, "value": 1},
-    "output": {"for": 1, "form": 1, "name": 1},
-    "p": {},
-    "param": {"name": 1, "value": 1},
-    "pre": {},
-    "progress": {"value": 1, "max": 1},
-    "q": {"cite": 1},
-    "rp": {},
-    "rt": {},
-    "ruby": {},
-    "s": {},
-    "samp": {},
-    "script": {"charset": 1, "type": {"text/javascript": 1}, "src": 1, "defer": 1, "async": 1},
-    "select": {"autofocus": 1, "disabled": 1, "form": 1, "multiple": {"multiple": 1}, "name": 1, "size": 1, "readonly":{"readonly": 1}},
-    "small": {},
-    "source": {"src": 1, "type": 1, "media": 1},
-    "span": {},
-    "strong": {},
-    "style": {"type": 1, "media": {"all": 1, "screen": 1, "print": 1}, "scoped": 1},
-    "sub": {},
-    "sup": {},
-    "svg": {},
-    "table": {"summary": 1},
-    "tbody": {},
-    "td": {"headers": 1, "rowspan": 1, "colspan": 1},
-    "textarea": {"autofocus": {"autofocus": 1}, "disabled": {"disabled": 1}, "form": 1, "maxlength": 1, "name": 1, "placeholder": 1, "readonly": {"readonly": 1}, "required": {"required": 1}, "rows": 1, "cols": 1, "wrap": {"on": 1, "off": 1, "hard": 1, "soft": 1}},
-    "tfoot": {},
-    "th": {"headers": 1, "rowspan": 1, "colspan": 1, "scope": 1},
-    "thead": {},
-    "time": {"datetime": 1},
-    "title": {},
-    "tr": {},
-    "track": {"kind": 1, "src": 1, "srclang": 1, "label": 1, "default": 1},
-    "section": {},
-    "summary": {},
-    "u": {},
-    "ul": {},
-    "var": {},
-    "video": {"src": 1, "autobuffer": 1, "autoplay": {"autoplay": 1}, "loop": {"loop": 1}, "controls": {"controls": 1}, "width": 1, "height": 1, "poster": 1, "muted": {"muted": 1}, "preload": {"auto": 1, "metadata": 1, "none": 1}},
-    "wbr": {}
-};
-
-var elements = Object.keys(attributeMap);
+var oop = require("../../lib/oop");
+var Behaviour = require("../behaviour").Behaviour;
+var TokenIterator = require("../../token_iterator").TokenIterator;
+var lang = require("../../lib/lang");
 
 function is(token, type) {
-    return token.type.lastIndexOf(type + ".xml") > -1;
+    return token && token.type.lastIndexOf(type + ".xml") > -1;
 }
 
-function findTagName(session, pos) {
-    var iterator = new TokenIterator(session, pos.row, pos.column);
-    var token = iterator.getCurrentToken();
-    while (token && !is(token, "tag-name")){
-        token = iterator.stepBackward();
-    }
-    if (token)
-        return token.value;
-}
+var XmlBehaviour = function () {
 
-function findAttributeName(session, pos) {
-    var iterator = new TokenIterator(session, pos.row, pos.column);
-    var token = iterator.getCurrentToken();
-    while (token && !is(token, "attribute-name")){
-        token = iterator.stepBackward();
-    }
-    if (token)
-        return token.value;
-}
+    this.add("string_dquotes", "insertion", function (state, action, editor, session, text) {
+        if (text == '"' || text == "'") {
+            var quote = text;
+            var selected = session.doc.getTextRange(editor.getSelectionRange());
+            if (selected !== "" && selected !== "'" && selected != '"' && editor.getWrapBehavioursEnabled()) {
+                return {
+                    text: quote + selected + quote,
+                    selection: false
+                };
+            }
 
-var HtmlCompletions = function() {
+            var cursor = editor.getCursorPosition();
+            var line = session.doc.getLine(cursor.row);
+            var rightChar = line.substring(cursor.column, cursor.column + 1);
+            var iterator = new TokenIterator(session, cursor.row, cursor.column);
+            var token = iterator.getCurrentToken();
 
-};
+            if (rightChar == quote && (is(token, "attribute-value") || is(token, "string"))) {
+                return {
+                    text: "",
+                    selection: [1, 1]
+                };
+            }
 
-(function() {
+            if (!token)
+                token = iterator.stepBackward();
 
-    this.getCompletions = function(state, session, pos, prefix) {
-        var token = session.getTokenAt(pos.row, pos.column);
+            if (!token)
+                return;
 
-        if (!token)
-            return [];
-        if (is(token, "tag-name") || is(token, "tag-open") || is(token, "end-tag-open"))
-            return this.getTagCompletions(state, session, pos, prefix);
-        if (is(token, "tag-whitespace") || is(token, "attribute-name"))
-            return this.getAttributeCompletions(state, session, pos, prefix);
-        if (is(token, "attribute-value"))
-            return this.getAttributeValueCompletions(state, session, pos, prefix);
-        var line = session.getLine(pos.row).substr(0, pos.column);
-        if (/&[a-z]*$/i.test(line))
-            return this.getHTMLEntityCompletions(state, session, pos, prefix);
-
-        return [];
-    };
-
-    this.getTagCompletions = function(state, session, pos, prefix) {
-        return elements.map(function(element){
-            return {
-                value: element,
-                meta: "tag",
-                score: 1000000
-            };
-        });
-    };
-
-    this.getAttributeCompletions = function(state, session, pos, prefix) {
-        var tagName = findTagName(session, pos);
-        if (!tagName)
-            return [];
-        var attributes = globalAttributes;
-        if (tagName in attributeMap) {
-            attributes = attributes.concat(Object.keys(attributeMap[tagName]));
+            while (is(token, "tag-whitespace") || is(token, "whitespace")) {
+                token = iterator.stepBackward();
+            }
+            var rightSpace = !rightChar || rightChar.match(/\s/);
+            if (is(token, "attribute-equals") && (rightSpace || rightChar == '>') || (is(token, "decl-attribute-equals") && (rightSpace || rightChar == '?'))) {
+                return {
+                    text: quote + quote,
+                    selection: [1, 1]
+                };
+            }
         }
-        return attributes.map(function(attribute){
-            return {
-                caption: attribute,
-                snippet: attribute + '="$0"',
-                meta: "attribute",
-                score: 1000000
-            };
-        });
-    };
-
-    this.getAttributeValueCompletions = function(state, session, pos, prefix) {
-        var tagName = findTagName(session, pos);
-        var attributeName = findAttributeName(session, pos);
-        
-        if (!tagName)
-            return [];
-        var values = [];
-        if (tagName in attributeMap && attributeName in attributeMap[tagName] && typeof attributeMap[tagName][attributeName] === "object") {
-            values = Object.keys(attributeMap[tagName][attributeName]);
-        }
-        return values.map(function(value){
-            return {
-                caption: value,
-                snippet: value,
-                meta: "attribute value",
-                score: 1000000
-            };
-        });
-    };
-
-    this.getHTMLEntityCompletions = function(state, session, pos, prefix) {
-        var values = ['Aacute;', 'aacute;', 'Acirc;', 'acirc;', 'acute;', 'AElig;', 'aelig;', 'Agrave;', 'agrave;', 'alefsym;', 'Alpha;', 'alpha;', 'amp;', 'and;', 'ang;', 'Aring;', 'aring;', 'asymp;', 'Atilde;', 'atilde;', 'Auml;', 'auml;', 'bdquo;', 'Beta;', 'beta;', 'brvbar;', 'bull;', 'cap;', 'Ccedil;', 'ccedil;', 'cedil;', 'cent;', 'Chi;', 'chi;', 'circ;', 'clubs;', 'cong;', 'copy;', 'crarr;', 'cup;', 'curren;', 'Dagger;', 'dagger;', 'dArr;', 'darr;', 'deg;', 'Delta;', 'delta;', 'diams;', 'divide;', 'Eacute;', 'eacute;', 'Ecirc;', 'ecirc;', 'Egrave;', 'egrave;', 'empty;', 'emsp;', 'ensp;', 'Epsilon;', 'epsilon;', 'equiv;', 'Eta;', 'eta;', 'ETH;', 'eth;', 'Euml;', 'euml;', 'euro;', 'exist;', 'fnof;', 'forall;', 'frac12;', 'frac14;', 'frac34;', 'frasl;', 'Gamma;', 'gamma;', 'ge;', 'gt;', 'hArr;', 'harr;', 'hearts;', 'hellip;', 'Iacute;', 'iacute;', 'Icirc;', 'icirc;', 'iexcl;', 'Igrave;', 'igrave;', 'image;', 'infin;', 'int;', 'Iota;', 'iota;', 'iquest;', 'isin;', 'Iuml;', 'iuml;', 'Kappa;', 'kappa;', 'Lambda;', 'lambda;', 'lang;', 'laquo;', 'lArr;', 'larr;', 'lceil;', 'ldquo;', 'le;', 'lfloor;', 'lowast;', 'loz;', 'lrm;', 'lsaquo;', 'lsquo;', 'lt;', 'macr;', 'mdash;', 'micro;', 'middot;', 'minus;', 'Mu;', 'mu;', 'nabla;', 'nbsp;', 'ndash;', 'ne;', 'ni;', 'not;', 'notin;', 'nsub;', 'Ntilde;', 'ntilde;', 'Nu;', 'nu;', 'Oacute;', 'oacute;', 'Ocirc;', 'ocirc;', 'OElig;', 'oelig;', 'Ograve;', 'ograve;', 'oline;', 'Omega;', 'omega;', 'Omicron;', 'omicron;', 'oplus;', 'or;', 'ordf;', 'ordm;', 'Oslash;', 'oslash;', 'Otilde;', 'otilde;', 'otimes;', 'Ouml;', 'ouml;', 'para;', 'part;', 'permil;', 'perp;', 'Phi;', 'phi;', 'Pi;', 'pi;', 'piv;', 'plusmn;', 'pound;', 'Prime;', 'prime;', 'prod;', 'prop;', 'Psi;', 'psi;', 'quot;', 'radic;', 'rang;', 'raquo;', 'rArr;', 'rarr;', 'rceil;', 'rdquo;', 'real;', 'reg;', 'rfloor;', 'Rho;', 'rho;', 'rlm;', 'rsaquo;', 'rsquo;', 'sbquo;', 'Scaron;', 'scaron;', 'sdot;', 'sect;', 'shy;', 'Sigma;', 'sigma;', 'sigmaf;', 'sim;', 'spades;', 'sub;', 'sube;', 'sum;', 'sup;', 'sup1;', 'sup2;', 'sup3;', 'supe;', 'szlig;', 'Tau;', 'tau;', 'there4;', 'Theta;', 'theta;', 'thetasym;', 'thinsp;', 'THORN;', 'thorn;', 'tilde;', 'times;', 'trade;', 'Uacute;', 'uacute;', 'uArr;', 'uarr;', 'Ucirc;', 'ucirc;', 'Ugrave;', 'ugrave;', 'uml;', 'upsih;', 'Upsilon;', 'upsilon;', 'Uuml;', 'uuml;', 'weierp;', 'Xi;', 'xi;', 'Yacute;', 'yacute;', 'yen;', 'Yuml;', 'yuml;', 'Zeta;', 'zeta;', 'zwj;', 'zwnj;'];
-
-        return values.map(function(value){
-            return {
-                caption: value,
-                snippet: value,
-                meta: "html entity",
-                score: 1000000
-            };
-        });
-    };
-
-}).call(HtmlCompletions.prototype);
-
-exports.HtmlCompletions = HtmlCompletions;
-});
-
-define("ace/mode/html",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text","ace/mode/javascript","ace/mode/css","ace/mode/html_highlight_rules","ace/mode/behaviour/xml","ace/mode/folding/html","ace/mode/html_completions","ace/worker/worker_client"], function(require, exports, module) {
-"use strict";
-
-var oop = require("../lib/oop");
-var lang = require("../lib/lang");
-var TextMode = require("./text").Mode;
-var JavaScriptMode = require("./javascript").Mode;
-var CssMode = require("./css").Mode;
-var HtmlHighlightRules = require("./html_highlight_rules").HtmlHighlightRules;
-var XmlBehaviour = require("./behaviour/xml").XmlBehaviour;
-var HtmlFoldMode = require("./folding/html").FoldMode;
-var HtmlCompletions = require("./html_completions").HtmlCompletions;
-var WorkerClient = require("../worker/worker_client").WorkerClient;
-var voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "menuitem", "param", "source", "track", "wbr"];
-var optionalEndTags = ["li", "dt", "dd", "p", "rt", "rp", "optgroup", "option", "colgroup", "td", "th"];
-
-var Mode = function(options) {
-    this.fragmentContext = options && options.fragmentContext;
-    this.HighlightRules = HtmlHighlightRules;
-    this.$behaviour = new XmlBehaviour();
-    this.$completer = new HtmlCompletions();
-    
-    this.createModeDelegates({
-        "js-": JavaScriptMode,
-        "css-": CssMode
     });
-    
-    this.foldingRules = new HtmlFoldMode(this.voidElements, lang.arrayToMap(optionalEndTags));
+
+    this.add("string_dquotes", "deletion", function(state, action, editor, session, range) {
+        var selected = session.doc.getTextRange(range);
+        if (!range.isMultiLine() && (selected == '"' || selected == "'")) {
+            var line = session.doc.getLine(range.start.row);
+            var rightChar = line.substring(range.start.column + 1, range.start.column + 2);
+            if (rightChar == selected) {
+                range.end.column++;
+                return range;
+            }
+        }
+    });
+
+    this.add("autoclosing", "insertion", function (state, action, editor, session, text) {
+        if (text == '>') {
+            var position = editor.getSelectionRange().start;
+            var iterator = new TokenIterator(session, position.row, position.column);
+            var token = iterator.getCurrentToken() || iterator.stepBackward();
+            if (!token || !(is(token, "tag-name") || is(token, "tag-whitespace") || is(token, "attribute-name") || is(token, "attribute-equals") || is(token, "attribute-value")))
+                return;
+            if (is(token, "reference.attribute-value"))
+                return;
+            if (is(token, "attribute-value")) {
+                var tokenEndColumn = iterator.getCurrentTokenColumn() + token.value.length;
+                if (position.column < tokenEndColumn)
+                    return;
+                if (position.column == tokenEndColumn) {
+                    var nextToken = iterator.stepForward();
+                    if (nextToken && is(nextToken, "attribute-value"))
+                        return;
+                    iterator.stepBackward();
+                }
+            }
+            
+            if (/^\s*>/.test(session.getLine(position.row).slice(position.column)))
+                return;
+            while (!is(token, "tag-name")) {
+                token = iterator.stepBackward();
+                if (token.value == "<") {
+                    token = iterator.stepForward();
+                    break;
+                }
+            }
+
+            var tokenRow = iterator.getCurrentTokenRow();
+            var tokenColumn = iterator.getCurrentTokenColumn();
+            if (is(iterator.stepBackward(), "end-tag-open"))
+                return;
+
+            var element = token.value;
+            if (tokenRow == position.row)
+                element = element.substring(0, position.column - tokenColumn);
+
+            if (this.voidElements.hasOwnProperty(element.toLowerCase()))
+                 return;
+
+            return {
+               text: ">" + "</" + element + ">",
+               selection: [1, 1]
+            };
+        }
+    });
+
+    this.add("autoindent", "insertion", function (state, action, editor, session, text) {
+        if (text == "\n") {
+            var cursor = editor.getCursorPosition();
+            var line = session.getLine(cursor.row);
+            var iterator = new TokenIterator(session, cursor.row, cursor.column);
+            var token = iterator.getCurrentToken();
+
+            if (token && token.type.indexOf("tag-close") !== -1) {
+                if (token.value == "/>")
+                    return;
+                while (token && token.type.indexOf("tag-name") === -1) {
+                    token = iterator.stepBackward();
+                }
+
+                if (!token) {
+                    return;
+                }
+
+                var tag = token.value;
+                var row = iterator.getCurrentTokenRow();
+                token = iterator.stepBackward();
+                if (!token || token.type.indexOf("end-tag") !== -1) {
+                    return;
+                }
+
+                if (this.voidElements && !this.voidElements[tag]) {
+                    var nextToken = session.getTokenAt(cursor.row, cursor.column+1);
+                    var line = session.getLine(row);
+                    var nextIndent = this.$getIndent(line);
+                    var indent = nextIndent + session.getTabString();
+
+                    if (nextToken && nextToken.value === "</") {
+                        return {
+                            text: "\n" + indent + "\n" + nextIndent,
+                            selection: [1, indent.length, 1, indent.length]
+                        };
+                    } else {
+                        return {
+                            text: "\n" + indent
+                        };
+                    }
+                }
+            }
+        }
+    });
+
 };
-oop.inherits(Mode, TextMode);
 
-(function() {
+oop.inherits(XmlBehaviour, Behaviour);
 
-    this.blockComment = {start: "<!--", end: "-->"};
-
-    this.voidElements = lang.arrayToMap(voidElements);
-
-    this.getNextLineIndent = function(state, line, tab) {
-        return this.$getIndent(line);
-    };
-
-    this.checkOutdent = function(state, line, input) {
-        return false;
-    };
-
-    this.getCompletions = function(state, session, pos, prefix) {
-        return this.$completer.getCompletions(state, session, pos, prefix);
-    };
-
-    this.createWorker = function(session) {
-        if (this.constructor != Mode)
-            return;
-        var worker = new WorkerClient(["ace"], "ace/mode/html_worker", "Worker");
-        worker.attachToDocument(session.getDocument());
-
-        if (this.fragmentContext)
-            worker.call("setOptions", [{context: this.fragmentContext}]);
-
-        worker.on("error", function(e) {
-            session.setAnnotations(e.data);
-        });
-
-        worker.on("terminate", function() {
-            session.clearAnnotations();
-        });
-
-        return worker;
-    };
-
-    this.$id = "ace/mode/html";
-}).call(Mode.prototype);
-
-exports.Mode = Mode;
+exports.XmlBehaviour = XmlBehaviour;
 });
 
 define("ace/mode/behaviour/liquid",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/mode/behaviour/xml","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
@@ -2578,6 +2218,291 @@ define("ace/mode/behaviour/liquid",["require","exports","module","ace/lib/oop","
     
     exports.LiquidBehaviour = LiquidBehaviour;
     });
+
+define("ace/mode/xml_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+"use strict";
+
+var oop = require("../lib/oop");
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+var XmlHighlightRules = function(normalize) {
+    var tagRegex = "[_:a-zA-Z\xc0-\uffff][-_:.a-zA-Z0-9\xc0-\uffff]*";
+
+    this.$rules = {
+        start : [
+            {token : "string.cdata.xml", regex : "<\\!\\[CDATA\\[", next : "cdata"},
+            {
+                token : ["punctuation.instruction.xml", "keyword.instruction.xml"],
+                regex : "(<\\?)(" + tagRegex + ")", next : "processing_instruction"
+            },
+            {token : "comment.start.xml", regex : "<\\!--", next : "comment"},
+            {
+                token : ["xml-pe.doctype.xml", "xml-pe.doctype.xml"],
+                regex : "(<\\!)(DOCTYPE)(?=[\\s])", next : "doctype", caseInsensitive: true
+            },
+            {include : "tag"},
+            {token : "text.end-tag-open.xml", regex: "</"},
+            {token : "text.tag-open.xml", regex: "<"},
+            {include : "reference"},
+            {defaultToken : "text.xml"}
+        ],
+
+        processing_instruction : [{
+            token : "entity.other.attribute-name.decl-attribute-name.xml",
+            regex : tagRegex
+        }, {
+            token : "keyword.operator.decl-attribute-equals.xml",
+            regex : "="
+        }, {
+            include: "whitespace"
+        }, {
+            include: "string"
+        }, {
+            token : "punctuation.xml-decl.xml",
+            regex : "\\?>",
+            next : "start"
+        }],
+
+        doctype : [
+            {include : "whitespace"},
+            {include : "string"},
+            {token : "xml-pe.doctype.xml", regex : ">", next : "start"},
+            {token : "xml-pe.xml", regex : "[-_a-zA-Z0-9:]+"},
+            {token : "punctuation.int-subset", regex : "\\[", push : "int_subset"}
+        ],
+
+        int_subset : [{
+            token : "text.xml",
+            regex : "\\s+"
+        }, {
+            token: "punctuation.int-subset.xml",
+            regex: "]",
+            next: "pop"
+        }, {
+            token : ["punctuation.markup-decl.xml", "keyword.markup-decl.xml"],
+            regex : "(<\\!)(" + tagRegex + ")",
+            push : [{
+                token : "text",
+                regex : "\\s+"
+            },
+            {
+                token : "punctuation.markup-decl.xml",
+                regex : ">",
+                next : "pop"
+            },
+            {include : "string"}]
+        }],
+
+        cdata : [
+            {token : "string.cdata.xml", regex : "\\]\\]>", next : "start"},
+            {token : "text.xml", regex : "\\s+"},
+            {token : "text.xml", regex : "(?:[^\\]]|\\](?!\\]>))+"}
+        ],
+
+        comment : [
+            {token : "comment.end.xml", regex : "-->", next : "start"},
+            {defaultToken : "comment.xml"}
+        ],
+
+        reference : [{
+            token : "constant.language.escape.reference.xml",
+            regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
+        }],
+
+        attr_reference : [{
+            token : "constant.language.escape.reference.attribute-value.xml",
+            regex : "(?:&#[0-9]+;)|(?:&#x[0-9a-fA-F]+;)|(?:&[a-zA-Z0-9_:\\.-]+;)"
+        }],
+
+        tag : [{
+            token : ["meta.tag.punctuation.tag-open.xml", "meta.tag.punctuation.end-tag-open.xml", "meta.tag.tag-name.xml"],
+            regex : "(?:(<)|(</))((?:" + tagRegex + ":)?" + tagRegex + ")",
+            next: [
+                {include : "attributes"},
+                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
+            ]
+        }],
+
+        tag_whitespace : [
+            {token : "text.tag-whitespace.xml", regex : "\\s+"}
+        ],
+        whitespace : [
+            {token : "text.whitespace.xml", regex : "\\s+"}
+        ],
+        string: [{
+            token : "string.xml",
+            regex : "'",
+            push : [
+                {token : "string.xml", regex: "'", next: "pop"},
+                {defaultToken : "string.xml"}
+            ]
+        }, {
+            token : "string.xml",
+            regex : '"',
+            push : [
+                {token : "string.xml", regex: '"', next: "pop"},
+                {defaultToken : "string.xml"}
+            ]
+        }],
+
+        attributes: [{
+            token : "entity.other.attribute-name.xml",
+            regex : tagRegex
+        }, {
+            token : "keyword.operator.attribute-equals.xml",
+            regex : "="
+        }, {
+            include: "tag_whitespace"
+        }, {
+            include: "attribute_value"
+        }],
+
+        attribute_value: [{
+            token : "string.attribute-value.xml",
+            regex : "'",
+            push : [
+                {token : "string.attribute-value.xml", regex: "'", next: "pop"},
+                {include : "attr_reference"},
+                {defaultToken : "string.attribute-value.xml"}
+            ]
+        }, {
+            token : "string.attribute-value.xml",
+            regex : '"',
+            push : [
+                {token : "string.attribute-value.xml", regex: '"', next: "pop"},
+                {include : "attr_reference"},
+                {defaultToken : "string.attribute-value.xml"}
+            ]
+        }]
+    };
+
+    if (this.constructor === XmlHighlightRules)
+        this.normalizeRules();
+};
+
+
+(function() {
+
+    this.embedTagRules = function(HighlightRules, prefix, tag){
+        this.$rules.tag.unshift({
+            token : ["meta.tag.punctuation.tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
+            regex : "(<)(" + tag + "(?=\\s|>|$))",
+            next: [
+                {include : "attributes"},
+                {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : prefix + "start"}
+            ]
+        });
+
+        this.$rules[tag + "-end"] = [
+            {include : "attributes"},
+            {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>",  next: "start",
+                onMatch : function(value, currentState, stack) {
+                    stack.splice(0);
+                    return this.token;
+            }}
+        ];
+
+        this.embedRules(HighlightRules, prefix, [{
+            token: ["meta.tag.punctuation.end-tag-open.xml", "meta.tag." + tag + ".tag-name.xml"],
+            regex : "(</)(" + tag + "(?=\\s|>|$))",
+            next: tag + "-end"
+        }, {
+            token: "string.cdata.xml",
+            regex : "<\\!\\[CDATA\\["
+        }, {
+            token: "string.cdata.xml",
+            regex : "\\]\\]>"
+        }]);
+    };
+
+}).call(TextHighlightRules.prototype);
+
+oop.inherits(XmlHighlightRules, TextHighlightRules);
+
+exports.XmlHighlightRules = XmlHighlightRules;
+});
+
+define("ace/mode/html_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/css_highlight_rules","ace/mode/javascript_highlight_rules","ace/mode/xml_highlight_rules"], function(require, exports, module) {
+"use strict";
+
+var oop = require("../lib/oop");
+var lang = require("../lib/lang");
+var CssHighlightRules = require("./css_highlight_rules").CssHighlightRules;
+var JavaScriptHighlightRules = require("./javascript_highlight_rules").JavaScriptHighlightRules;
+var XmlHighlightRules = require("./xml_highlight_rules").XmlHighlightRules;
+
+var tagMap = lang.createMap({
+    a           : 'anchor',
+    button 	    : 'form',
+    form        : 'form',
+    img         : 'image',
+    input       : 'form',
+    label       : 'form',
+    option      : 'form',
+    script      : 'script',
+    select      : 'form',
+    textarea    : 'form',
+    style       : 'style',
+    table       : 'table',
+    tbody       : 'table',
+    td          : 'table',
+    tfoot       : 'table',
+    th          : 'table',
+    tr          : 'table'
+});
+
+var HtmlHighlightRules = function() {
+    XmlHighlightRules.call(this);
+
+    this.addRules({
+        attributes: [{
+            include : "tag_whitespace"
+        }, {
+            token : "entity.other.attribute-name.xml",
+            regex : "[-_a-zA-Z0-9:.]+"
+        }, {
+            token : "keyword.operator.attribute-equals.xml",
+            regex : "=",
+            push : [{
+                include: "tag_whitespace"
+            }, {
+                token : "string.unquoted.attribute-value.html",
+                regex : "[^<>='\"`\\s]+",
+                next : "pop"
+            }, {
+                token : "empty",
+                regex : "",
+                next : "pop"
+            }]
+        }, {
+            include : "attribute_value"
+        }],
+        tag: [{
+            token : function(start, tag) {
+                var group = tagMap[tag];
+                return ["meta.tag.punctuation." + (start == "<" ? "" : "end-") + "tag-open.xml",
+                    "meta.tag" + (group ? "." + group : "") + ".tag-name.xml"];
+            },
+            regex : "(</?)([-_a-zA-Z0-9:.]+)",
+            next: "tag_stuff"
+        }],
+        tag_stuff: [
+            {include : "attributes"},
+            {token : "meta.tag.punctuation.tag-close.xml", regex : "/?>", next : "start"}
+        ]
+    });
+
+    this.embedTagRules(CssHighlightRules, "css-", "style");
+    this.embedTagRules(new JavaScriptHighlightRules({jsx: false}).getRules(), "js-", "script");
+
+    if (this.constructor === HtmlHighlightRules)
+        this.normalizeRules();
+};
+
+oop.inherits(HtmlHighlightRules, XmlHighlightRules);
+
+exports.HtmlHighlightRules = HtmlHighlightRules;
+});
 
 define("ace/mode/liquid_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules","ace/mode/html_highlight_rules"], function(require, exports, module) {
 "use strict";
@@ -2673,28 +2598,39 @@ oop.inherits(LiquidHighlightRules, TextHighlightRules);
 exports.LiquidHighlightRules = LiquidHighlightRules;
 });
 
-define("ace/mode/liquid",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/html","ace/mode/html_completions","ace/mode/behaviour/liquid","ace/mode/liquid_highlight_rules"], function(require, exports, module) {
+define("ace/mode/liquid",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text","ace/mode/javascript","ace/mode/css","ace/mode/html_completions","ace/mode/folding/html","ace/mode/behaviour/liquid","ace/mode/liquid_highlight_rules","ace/mode/matching_brace_outdent"], function(require, exports, module) {
 
 var oop = require("../lib/oop");
+var lang = require("../lib/lang");
 var TextMode = require("./text").Mode;
-var HtmlMode = require("./html").Mode;
+var JavaScriptMode = require("./javascript").Mode;
+var CssMode = require("./css").Mode;
 var HtmlCompletions = require("./html_completions").HtmlCompletions;
+var HtmlFoldMode = require("./folding/html").FoldMode;
 var LiquidBehaviour = require("./behaviour/liquid").LiquidBehaviour;
 var LiquidHighlightRules = require("./liquid_highlight_rules").LiquidHighlightRules;
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
+var voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "keygen", "link", "meta", "menuitem", "param", "source", "track", "wbr"];
+var optionalEndTags = ["li", "dt", "dd", "p", "rt", "rp", "optgroup", "option", "colgroup", "td", "th"];
     
 var Mode = function() {
     this.HighlightRules = LiquidHighlightRules;
+    this.$outdent = new MatchingBraceOutdent();
     this.$behaviour = new LiquidBehaviour();
     this.$completer = new HtmlCompletions();
     
     this.createModeDelegates({
-        "html-": HtmlMode
+        "js-": JavaScriptMode,
+        "css-": CssMode
     });
+
+    this.foldingRules = new HtmlFoldMode(this.voidElements, lang.arrayToMap(optionalEndTags));
 };
 oop.inherits(Mode, TextMode);
 
 (function() {
     this.blockComment = {start: "<!--", end: "-->"};
+    this.voidElements = lang.arrayToMap(voidElements);
     
     this.getNextLineIndent = function(state, line, tab) {
         var indent = this.$getIndent(line);
