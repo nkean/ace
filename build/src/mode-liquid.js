@@ -2673,12 +2673,10 @@ oop.inherits(LiquidHighlightRules, TextHighlightRules);
 exports.LiquidHighlightRules = LiquidHighlightRules;
 });
 
-define("ace/mode/liquid",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/javascript","ace/mode/css","ace/mode/html","ace/mode/html_completions","ace/mode/behaviour/liquid","ace/mode/liquid_highlight_rules"], function(require, exports, module) {
+define("ace/mode/liquid",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/html","ace/mode/html_completions","ace/mode/behaviour/liquid","ace/mode/liquid_highlight_rules"], function(require, exports, module) {
 
 var oop = require("../lib/oop");
 var TextMode = require("./text").Mode;
-var JavaScriptMode = require("./javascript").Mode;
-var CssMode = require("./css").Mode;
 var HtmlMode = require("./html").Mode;
 var HtmlCompletions = require("./html_completions").HtmlCompletions;
 var LiquidBehaviour = require("./behaviour/liquid").LiquidBehaviour;
@@ -2690,8 +2688,6 @@ var Mode = function() {
     this.$completer = new HtmlCompletions();
     
     this.createModeDelegates({
-        "js-": JavaScriptMode,
-        "css-": CssMode,
         "html-": HtmlMode
     });
 };
