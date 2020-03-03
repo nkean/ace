@@ -3,6 +3,10 @@ define("ace/snippets/liquid",["require","exports","module"], function(require, e
 
 exports.snippetText = "\n\
 # liquid specific snippets\n\
+snippet assign\n\
+	{% assign ${1:var} = ${2:val} %}\n\
+snippet include\n\
+	{% include '${1:ORG_snippet_name}' %}\n\
 snippet ife\n\
 	{% if ${1:condition} %}\n\
 \n\
