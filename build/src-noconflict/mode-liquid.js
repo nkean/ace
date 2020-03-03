@@ -2138,12 +2138,11 @@ oop.inherits(XmlBehaviour, Behaviour);
 exports.XmlBehaviour = XmlBehaviour;
 });
 
-ace.define("ace/mode/behaviour/liquid",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/mode/behaviour/cstyle","ace/mode/behaviour/xml","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
+ace.define("ace/mode/behaviour/liquid",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/mode/behaviour/xml","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
     "use strict";
     
     var oop = require("../../lib/oop");
     var Behaviour = require("../behaviour").Behaviour;
-    var CstyleBehaviour = require("./cstyle").CstyleBehaviour;
     var XmlBehaviour = require("./xml").XmlBehaviour;
     var TokenIterator = require("../../token_iterator").TokenIterator;
     var lang = require("../../lib/lang");
@@ -2153,8 +2152,7 @@ ace.define("ace/mode/behaviour/liquid",["require","exports","module","ace/lib/oo
     }
     
     var LiquidBehaviour = function () {
-        this.inherit(CstyleBehaviour);
-        this.inherit(XmlBehaviour);
+        XmlBehaviour.call(this);
         this.add("autoBraceTagClosing","insertion", function (state, action, editor, session, text) {
             if (text == '}') {
                 var position = editor.getSelectionRange().start;
