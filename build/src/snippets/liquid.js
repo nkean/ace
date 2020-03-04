@@ -29,6 +29,8 @@ snippet comment\n\
 	{% comment %}\n\
 	  ${1:comment}\n\
 	{% endcomment %}\n\
+snippet tag\n\
+	{{ ${1} }}\n\
 \n\
 # Include html.snippets\n\
 # Some useful Unicode entities\n\
