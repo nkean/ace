@@ -1991,7 +1991,8 @@ var snippetCompleter = {
                     caption: caption,
                     snippet: s.content,
                     meta: s.tabTrigger && !s.name ? s.tabTrigger + "\u21E5 " : "snippet",
-                    type: "snippet"
+                    type: "snippet",
+                    score: Infinity
                 });
             }
         }, this);
