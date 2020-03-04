@@ -10,7 +10,7 @@ snippet include\n\
 snippet disc\n\
 	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}\n\
 snippet console\n\
-	{{ ${1:object/variable} | console }}\n\
+	{{ ${1} | console }}\n\
 snippet ife\n\
 	{% if ${1:condition} %}\n\
 \n\
