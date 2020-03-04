@@ -4,11 +4,13 @@ define("ace/snippets/liquid",["require","exports","module"], function(require, e
 exports.snippetText = "\n\
 # liquid specific snippets\n\
 snippet assign\n\
-	{% assign ${1:var} = ${2:val} %}\n\
+	{% assign ${1:variable} = ${2:value} %}\n\
 snippet include\n\
 	{% include '${1:ORG_snippet_name}' %}\n\
 snippet disc\n\
 	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}\n\
+snippet console\n\
+	{{ ${1:object/variable} | console }}\n\
 snippet ife\n\
 	{% if ${1:condition} %}\n\
 \n\
