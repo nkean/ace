@@ -728,7 +728,7 @@ snippet optgroup\n\
 snippet output\n\
 	<output>${1}</output>\n\
 snippet p\n\
-	<p>${1}</p>\n\
+	<p class=\"${1}\">${2}</p>\n\
 snippet param\n\
 	<param name=\"${1}\" value=\"${2}\" />${3}\n\
 snippet pre\n\
