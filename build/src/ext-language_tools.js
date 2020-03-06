@@ -1992,7 +1992,7 @@ var snippetCompleter = {
                     snippet: s.content,
                     meta: s.tabTrigger && !s.name ? s.tabTrigger + "\u21E5 " : "snippet",
                     type: "snippet",
-                    score: Infinity
+                    score: 999999
                 });
             }
         }, this);
