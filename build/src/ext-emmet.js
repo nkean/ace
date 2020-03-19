@@ -475,9 +475,6 @@ var SnippetManager = function() {
     this.$getScope = function(editor) {
         var scope = editor.session.$mode.$id || "";
         scope = scope.split("/").pop();
-        if (scope === "liquid") {
-            scope = "html";
-        }
         if (scope === "html" || scope === "php") {
             if (scope === "php" && !editor.session.$mode.inlinePhp) 
                 scope = "html";
@@ -1257,7 +1254,7 @@ exports.isSupportedMode = function(mode) {
     if (!mode) return false;
     if (mode.emmetConfig) return true;
     var id = mode.$id || mode;
-    return /css|less|scss|sass|stylus|html|php|twig|ejs|handlebars|liquid/.test(id);
+    return /css|less|scss|sass|stylus|html|php|twig|ejs|handlebars/.test(id);
 };
 
 exports.isAvailable = function(editor, command) {
