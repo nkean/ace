@@ -25,7 +25,6 @@ snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
 	</div>\n\
-\n\
 	<style>\n\
 		/* ==== Page Styles ==== */\n\
 		.te-page {\n\
@@ -33,7 +32,6 @@ snippet ssc_base\n\
 			width: ${2}mm;\n\
 			position: relative;\n\
 		}\n\
-\n\
 		/* ==== Content Block Styles ==== */\n\
 		.te-header {\n\
 			position: absolute;\n\
@@ -43,7 +41,6 @@ snippet ssc_base\n\
 			height: ${3}mm;\n\
 			overflow: none;\n\
 		}\n\
-\n\
 		.te-footer {\n\
 			position: absolute;\n\
 			bottom: 0mm;\n\
@@ -52,22 +49,17 @@ snippet ssc_base\n\
 			height: ${4}mm;\n\
 			overflow: none;\n\
 		}\n\
-\n\
 		.te-top-vars {\n\
 			display: none;\n\
 		}\n\
-\n\
 		.hidden {\n\
 			display: none;\n\
 		}\n\
-\n\
 		.te-section {\n\
 			width: 100%;\n\
 			height: 100%;\n\
 		}\n\
-\n\
 	</style>\n\
-\n\
 	<div class=\"te-container\">\n\
 		<div class=\"te-page-container\">\n\
 			<div class=\"te-page\">\n\
