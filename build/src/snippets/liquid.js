@@ -22,7 +22,61 @@ snippet if\n\
 		\n\
 	{% endif %}\n\
 snippet ssc_base\n\
-<div class=\"te-top-vars\">{% include 'expert_content_branding' %}</div><style>/* ==== Page Styles ==== */.te-page {height: ${1}mm;width: ${2}mm;position: relative;}/* ==== Content Block Styles ==== */.te-header {position: absolute;top: 0mm;left: 0mm;width: 100%;height: ${3}mm;overflow: none;}.te-footer {position: absolute;bottom: 0mm;left: 0mm;width: 100%;height: ${4}mm;overflow: none;}.te-top-vars {display: none;}.hidden {display: none;}.te-section {width: 100%;height: 100%;}</style><div class=\"te-container\"><div class=\"te-page-container\"><div class=\"te-page\"><div class=\"background-img-preset te-bg-image\" style=\"background-image: url(''); background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div><div class=\"te-section-container te-header\" data-block-type=\"header\"><div class=\"te-section\" data-block-type=\"header\">{% include 'none' %}</div></div><div class=\"te-section-container te-footer\" data-block-type=\"footer\"><div class=\"te-section\" data-block-type=\"footer\" data-comarketable=\"false\">{% include 'none' %}</div></div></div></div></div>\n\
+<div class=\"te-top-vars\">\n\
+{% include 'expert_content_branding' %}\n\
+</div>\n\
+<style>\n\
+/* ==== Page Styles ==== */\n\
+.te-page {\n\
+height: ${1}mm;\n\
+width: ${2}mm;\n\
+position: relative;\n\
+}\n\
+/* ==== Content Block Styles ==== */\n\
+.te-header {\n\
+position: absolute;\n\
+top: 0mm;\n\
+left: 0mm;\n\
+width: 100%;\n\
+height: ${3}mm;\n\
+overflow: none;\n\
+}\n\
+.te-footer {\n\
+position: absolute;\n\
+bottom: 0mm;\n\
+left: 0mm;\n\
+width: 100%;\n\
+height: ${4}mm;\n\
+overflow: none;\n\
+}\n\
+.te-top-vars {\n\
+display: none;\n\
+}\n\
+.hidden {\n\
+display: none;\n\
+}\n\
+.te-section {\n\
+width: 100%;\n\
+height: 100%;\n\
+}\n\
+</style>\n\
+<div class=\"te-container\">\n\
+<div class=\"te-page-container\">\n\
+<div class=\"te-page\">\n\
+<div class=\"background-img-preset te-bg-image\" style=\"background-image: url(''); background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>\n\
+<div class=\"te-section-container te-header\" data-block-type=\"header\">\n\
+<div class=\"te-section\" data-block-type=\"header\">\n\
+{% include 'none' %}\n\
+</div>\n\
+</div>\n\
+<div class=\"te-section-container te-footer\" data-block-type=\"footer\">\n\
+<div class=\"te-section\" data-block-type=\"footer\" data-comarketable=\"false\">\n\
+{% include 'none' %}\n\
+</div>\n\
+</div>\n\
+</div>\n\
+</div>\n\
+</div>\n\
 snippet for\n\
 	{% for ${1:variable} in ${2:object} %}\n\
 \n\
