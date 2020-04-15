@@ -25,41 +25,49 @@ snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
 	</div>\n\
+\n\
 	<style>\n\
 		/* ==== Page Styles ==== */\n\
 		.te-page {\n\
-			height: ${1}mm;\n\
-			width: ${2}mm;\n\
+			height: ${1:HEIGHT}mm;\n\
+			width: ${2:WIDTH}mm;\n\
 			position: relative;\n\
 		}\n\
+\n\
 		/* ==== Content Block Styles ==== */\n\
 		.te-header {\n\
 			position: absolute;\n\
 			top: 0mm;\n\
 			left: 0mm;\n\
 			width: 100%;\n\
-			height: ${3}mm;\n\
+			height: ${3:HEIGHT}mm;\n\
 			overflow: none;\n\
 		}\n\
+\n\
 		.te-footer {\n\
 			position: absolute;\n\
 			bottom: 0mm;\n\
 			left: 0mm;\n\
 			width: 100%;\n\
-			height: ${4}mm;\n\
+			height: ${4:HEIGHT}mm;\n\
 			overflow: none;\n\
 		}\n\
+\n\
 		.te-top-vars {\n\
 			display: none;\n\
 		}\n\
+\n\
 		.hidden {\n\
 			display: none;\n\
 		}\n\
+\n\
 		.te-section {\n\
 			width: 100%;\n\
 			height: 100%;\n\
 		}\n\
+\n\
 	</style>\n\
+\n\
 	<div class=\"te-container\">\n\
 		<div class=\"te-page-container\">\n\
 			<div class=\"te-page\">\n\
@@ -90,7 +98,7 @@ snippet comment\n\
 	  ${1:comment}\n\
 	{% endcomment %}\n\
 snippet tag\n\
-	{{ ${1} }}\n\
+	{{ ${0} }}\n\
 \n\
 # Include html.snippets\n\
 # Some useful Unicode entities\n\
