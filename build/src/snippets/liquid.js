@@ -4,22 +4,22 @@ define("ace/snippets/liquid",["require","exports","module"], function(require, e
 exports.snippetText = "\n\
 # liquid specific snippets\n\
 snippet assign\n\
-	{% assign ${1:variable} = ${2:value} %}\n\
+	{% assign ${1:variable} = ${2:value} %}${0}\n\
 snippet include\n\
-	{% include '${1:ORG_snippet_name}' %}\n\
+	{% include '${1:ORG_snippet_name}' %}${0}\n\
 snippet disc\n\
-	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}\n\
+	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}${0}\n\
 snippet console\n\
-	{{ ${1} | console }}\n\
+	{{ ${1} | console }}${0}\n\
 snippet ife\n\
 	{% if ${1:condition} %}\n\
-\n\
+		${0}\n\
 	{% else %}\n\
 \n\
-	{% endif %}\n\
+	{% endif %}${0}\n\
 snippet if\n\
 	{% if ${1:condition} %}\n\
-		\n\
+		${0}\n\
 	{% endif %}\n\
 snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
@@ -67,7 +67,7 @@ snippet ssc_base\n\
 		}\n\
 \n\
 	</style>\n\
-\n\
+	${0}\n\
 	<div class=\"te-container\">\n\
 		<div class=\"te-page-container\">\n\
 			<div class=\"te-page\">\n\
@@ -87,19 +87,20 @@ snippet ssc_base\n\
 	</div>\n\
 snippet for\n\
 	{% for ${1:variable} in ${2:object} %}\n\
-\n\
+		${0}\n\
 	{% endfor %}\n\
 snippet capture\n\
 	{% capture ${1} %}\n\
-\n\
+		${0}\n\
 	{% endcapture %}\n\
 snippet comment\n\
 	{% comment %}\n\
 	  ${1:comment}\n\
-	{% endcomment %}\n\
+	{% endcomment %}${0}\n\
 snippet tag\n\
 	{{ ${0} }}\n\
-\n\
+snippet lorem\n\
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\
 # Include html.snippets\n\
 # Some useful Unicode entities\n\
 # Non-Breaking Space\n\
