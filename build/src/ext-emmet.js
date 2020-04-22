@@ -1003,7 +1003,6 @@ var snippetManager = require("../snippets").snippetManager;
 var Range = require("../range").Range;
 var config = require("../config");
 var emmet, emmetPath;
-emmetPath = '/';
 function AceEmmetEditor() {}
 
 AceEmmetEditor.prototype = {
@@ -1283,10 +1282,6 @@ var onChangeMode = function(e, target) {
 };
 
 exports.load = function(cb) {
-    if (typeof emmetPath !== "string") {
-        config.warn("script for emmet-core is not loaded");
-        return false;
-    }
     config.loadModule(emmetPath, function() {
         emmetPath = null;
         cb && cb();
