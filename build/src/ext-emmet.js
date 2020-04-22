@@ -1003,7 +1003,7 @@ var snippetManager = require("../snippets").snippetManager;
 var Range = require("../range").Range;
 var config = require("../config");
 var emmet, emmetPath;
-emmetPath = '';
+emmetPath = '/';
 function AceEmmetEditor() {}
 
 AceEmmetEditor.prototype = {
