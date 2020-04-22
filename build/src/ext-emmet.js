@@ -1002,8 +1002,8 @@ var Editor = require("../editor").Editor;
 var snippetManager = require("../snippets").snippetManager;
 var Range = require("../range").Range;
 var config = require("../config");
-var emmet;
-var emmetPath = '/';
+var emmet, emmetPath;
+emmetPath = '/';
 function AceEmmetEditor() {}
 
 AceEmmetEditor.prototype = {
