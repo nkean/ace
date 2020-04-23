@@ -1003,7 +1003,7 @@ var snippetManager = require("../snippets").snippetManager;
 var Range = require("../range").Range;
 var config = require("../config");
 var emmet, emmetPath;
-emmetPath = 'https://cloud9ide.github.io/emmet-core/emmet.js';
+emmetPath = '';
 function AceEmmetEditor() {}
 
 AceEmmetEditor.prototype = {
