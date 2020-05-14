@@ -86,7 +86,7 @@ snippet ssc_base\n\
 		</div>\n\
 	</div>\n\
 snippet ssc_bg_image\n\
-	<div class=\"te-bg-image ${1:variable-image-}\" style=\"background-image: url('${2}'); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
+	<div class=\"te-bg-image variable-image-\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
 snippet for\n\
 	{% for ${1:variable} in ${2:object} %}\n\
 		${0}\n\
