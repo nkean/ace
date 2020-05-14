@@ -1099,6 +1099,8 @@ AceEmmetEditor.prototype = {
           case "xml":
           case "xsl":
             return "xml";
+          case "liquid":
+            return "html";
           case "html":
             var profile = resources.getVariable("profile");
             if (!profile)
