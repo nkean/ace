@@ -2025,7 +2025,7 @@ var expandSnippet = {
     exec: function(editor) {
         return snippetManager.expandWithTab(editor);
     },
-    bindKey: "Space"
+    bindKey: "Tab"
 };
 
 var onChangeMode = function(e, editor) {
