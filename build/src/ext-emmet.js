@@ -1077,6 +1077,9 @@ AceEmmetEditor.prototype = {
         if (this.$syntax)
             return this.$syntax;
         var syntax = this.ace.session.$modeId.split("/").pop();
+        if (syntax == "liquid") {
+            syntax = "html";
+        }
         if (syntax == "html" || syntax == "php") {
             var cursor = this.ace.getCursorPosition();
             var state = this.ace.session.getState(cursor.row);
@@ -1099,8 +1102,6 @@ AceEmmetEditor.prototype = {
           case "xml":
           case "xsl":
             return "xml";
-          case "liquid":
-            return "html";
           case "html":
             var profile = resources.getVariable("profile");
             if (!profile)
