@@ -1566,7 +1566,7 @@ var Autocomplete = function() {
         "Esc": function(editor) { editor.completer.detach(); },
         "Return": function(editor) { return editor.completer.insertMatch(); },
         "Shift-Return": function(editor) { editor.completer.insertMatch(null, {deleteSuffix: true}); },
-        "Ctrl": function(editor) {
+        "Tab": function(editor) {
             var result = editor.completer.insertMatch();
             if (!result && !editor.tabstopManager)
                 editor.completer.goTo("down");
@@ -2025,7 +2025,7 @@ var expandSnippet = {
     exec: function(editor) {
         return snippetManager.expandWithTab(editor);
     },
-    bindKey: "Shift"
+    bindKey: "Tab"
 };
 
 var onChangeMode = function(e, editor) {
