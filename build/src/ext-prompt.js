@@ -1852,7 +1852,7 @@ Autocomplete.startCommand = {
         completer.showPopup(editor, options);
         completer.cancelContextMenu();
     },
-    bindKey: "Ctrl-Space|Ctrl-Shift-Space|Alt-Space|Shift-Space"
+    bindKey: "Ctrl-Space|Ctrl-Shift-Space|Alt-Space"
 };
 
 var FilteredList = function(array, filterText) {
