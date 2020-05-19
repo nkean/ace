@@ -1,8 +1,7 @@
 define("ace/snippets/liquid",["require","exports","module"], function(require, exports, module) {
 "use strict";
 
-exports.snippetText = "\n\
-# liquid specific snippets\n\
+exports.snippetText = "# liquid specific snippets\n\
 snippet assign\n\
 	{% assign ${1:variable} = ${2:value} %}${0}\n\
 snippet include\n\
@@ -12,15 +11,9 @@ snippet disc\n\
 snippet console\n\
 	{{ ${1} | console }}${0}\n\
 snippet ife\n\
-	{% if ${1:condition} %}\n\
-		${0}\n\
-	{% else %}\n\
-\n\
-	{% endif %}${0}\n\
+	{% if ${1:condition} %}${0}{% else %}{% endif %}${0}\n\
 snippet if\n\
-	{% if ${1:condition} %}\n\
-		${0}\n\
-	{% endif %}\n\
+	{% if ${1:condition} %}${0}{% endif %}\n\
 snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
@@ -88,17 +81,11 @@ snippet ssc_base\n\
 snippet ssc_bg_image\n\
 	<div class=\"te-bg-image variable-image-\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
 snippet for\n\
-	{% for ${1:variable} in ${2:object} %}\n\
-		${0}\n\
-	{% endfor %}\n\
+	{% for ${1:variable} in ${2:object} %}${0}{% endfor %}\n\
 snippet capture\n\
-	{% capture ${1} %}\n\
-		${0}\n\
-	{% endcapture %}\n\
+	{% capture ${1} %}${0}{% endcapture %}\n\
 snippet comment\n\
-	{% comment %}\n\
-	  ${1:comment}\n\
-	{% endcomment %}${0}\n\
+	{% comment %}${1:comment}{% endcomment %}${0}\n\
 snippet tag\n\
 	{{ ${0} }}\n\
 snippet lorem\n\
