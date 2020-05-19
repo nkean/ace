@@ -14,6 +14,10 @@ snippet ife\n\
 	{% if ${1:condition} %}${0}{% else %}{% endif %}${0}\n\
 snippet if\n\
 	{% if ${1:condition} %}${0}{% endif %}\n\
+snippet ifn\n\
+	{% if ${1:condition} %}\n\
+	${0}\n\
+	{% endif %}\n\
 snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
@@ -91,7 +95,7 @@ snippet tag\n\
 snippet lorem\n\
 	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\
 snippet text_fill\n\
-	<p class=\"${1} text-fill\" data-min-font-size=\"4\" data-max-font-size=\"${2}\"><span>${0}</span></p>\n\
+	<p class=\"${1} text-fill\" data-min-font-size=\"4\" data-max-font-size=\"${2:12}\"><span>${0}</span></p>\n\
 # Include html.snippets\n\
 # Some useful Unicode entities\n\
 # Non-Breaking Space\n\
