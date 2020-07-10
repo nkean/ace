@@ -84,6 +84,14 @@ snippet ssc_base\n\
 	</div>\n\
 snippet ssc_bg_image\n\
 	<div class=\"te-bg-image variable-image-\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
+snippet block_footer_sb\n\
+	<div data-block-type=\"footer\" class=\"te-section\" data-comarketable=\"false\">\n\
+		{% include '${1}' %}\n\
+	</div>${0}\n\
+snippet block_footer_cb\n\
+	<div data-block-type=\"footer\" class=\"te-section\" data-comarketable=\"true\">\n\
+		{% include '${1}' %}\n\
+	</div>${0}\n\
 snippet for\n\
 	{% for ${1:variable} in ${2:object} %}${3}{% endfor %}${0}\n\
 snippet capture\n\
