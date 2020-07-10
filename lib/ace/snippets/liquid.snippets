@@ -8,13 +8,13 @@ snippet disc
 snippet console
 	{{ ${1} | console }}${0}
 snippet ife
-	{% if ${1:condition} %}${0}{% else %}{% endif %}${0}
+	{% if ${1:condition} %}${2}{% else %}${3}{% endif %}${0}
 snippet if
-	{% if ${1:condition} %}${0}{% endif %}
+	{% if ${1:condition} %}${1}{% endif %}${0}
 snippet ifn
 	{% if ${1:condition} %}
-	${0}
-	{% endif %}
+	${2}
+	{% endif %}${0}
 snippet ssc_base
 	<div class="te-top-vars">
 		{% include 'expert_content_branding' %}
@@ -82,17 +82,17 @@ snippet ssc_base
 snippet ssc_bg_image
 	<div class="te-bg-image variable-image-" style="background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;"></div>${0}
 snippet for
-	{% for ${1:variable} in ${2:object} %}${0}{% endfor %}
+	{% for ${1:variable} in ${2:object} %}${3}{% endfor %}${0}
 snippet capture
 	{% capture ${1} %}${0}{% endcapture %}
 snippet comment
 	{% comment %}${1:comment}{% endcomment %}${0}
 snippet tag
-	{{ ${0} }}
+	{{ ${1} }}${0}
 snippet lorem
 	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 snippet text_fill
-	<p class="${1} text-fill" data-min-font-size="4" data-max-font-size="${2:12}"><span>${0}</span></p>
+	<p class="${1} text-fill" data-min-font-size="4" data-max-font-size="${2:12}"><span>${3}</span></p>${0}
 # Include html.snippets
 # Some useful Unicode entities
 # Non-Breaking Space
