@@ -4,6 +4,8 @@ snippet assign
 	{% assign ${1:var} = ${2:val} %}
 snippet include
 	{% include '${1:ORG_snippet_name}' %}
+snippet disc
+	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}
 snippet ife
 	{% if ${1:condition} %}
 

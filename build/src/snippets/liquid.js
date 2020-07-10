@@ -7,6 +7,8 @@ snippet assign\n\
 	{% assign ${1:var} = ${2:val} %}\n\
 snippet include\n\
 	{% include '${1:ORG_snippet_name}' %}\n\
+snippet disc\n\
+	{{ organization.disclaimers.${1:ORG_Disc_Name_Here}.content }}\n\
 snippet ife\n\
 	{% if ${1:condition} %}\n\
 \n\
