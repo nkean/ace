@@ -11,13 +11,13 @@ snippet disc\n\
 snippet console\n\
 	{{ ${1} | console }}${0}\n\
 snippet ife\n\
-	{% if ${1:condition} %}${0}{% else %}{% endif %}${0}\n\
+	{% if ${1:condition} %}${2}{% else %}${3}{% endif %}${0}\n\
 snippet if\n\
-	{% if ${1:condition} %}${0}{% endif %}\n\
+	{% if ${1:condition} %}${1}{% endif %}${0}\n\
 snippet ifn\n\
 	{% if ${1:condition} %}\n\
-	${0}\n\
-	{% endif %}\n\
+	${2}\n\
+	{% endif %}${0}\n\
 snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
@@ -85,17 +85,17 @@ snippet ssc_base\n\
 snippet ssc_bg_image\n\
 	<div class=\"te-bg-image variable-image-\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
 snippet for\n\
-	{% for ${1:variable} in ${2:object} %}${0}{% endfor %}\n\
+	{% for ${1:variable} in ${2:object} %}${3}{% endfor %}${0}\n\
 snippet capture\n\
 	{% capture ${1} %}${0}{% endcapture %}\n\
 snippet comment\n\
 	{% comment %}${1:comment}{% endcomment %}${0}\n\
 snippet tag\n\
-	{{ ${0} }}\n\
+	{{ ${1} }}${0}\n\
 snippet lorem\n\
 	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\
 snippet text_fill\n\
-	<p class=\"${1} text-fill\" data-min-font-size=\"4\" data-max-font-size=\"${2:12}\"><span>${0}</span></p>\n\
+	<p class=\"${1} text-fill\" data-min-font-size=\"4\" data-max-font-size=\"${2:12}\"><span>${3}</span></p>${0}\n\
 # Include html.snippets\n\
 # Some useful Unicode entities\n\
 # Non-Breaking Space\n\
