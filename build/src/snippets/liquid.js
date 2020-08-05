@@ -83,7 +83,7 @@ snippet ssc_base\n\
 		</div>\n\
 	</div>\n\
 snippet ssc_bg_image\n\
-	<div class=\"te-bg-image variable-image-\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
+	<div class=\"te-bg-image variable-image-${1}\" style=\"background-image: url(''); background-position: 50% 50%; background-position-x: 50%; background-position-y: 50%; background-size: cover;\"></div>${0}\n\
 snippet block_footer_sb\n\
 	<div data-block-type=\"footer\" class=\"te-section\" data-comarketable=\"false\">\n\
 		{% include '${1}' %}\n\
