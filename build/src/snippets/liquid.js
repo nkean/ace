@@ -31,6 +31,11 @@ snippet ssc_base\n\
 			position: relative;\n\
 		}\n\
 \n\
+		.background-img-preset {\n\
+			height: 100%;\n\
+			width: 100%;\n\
+		}\n\
+\n\
 		/* ==== Content Block Styles ==== */\n\
 		.te-header {\n\
 			position: absolute;\n\
