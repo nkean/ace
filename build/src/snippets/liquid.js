@@ -26,14 +26,14 @@ snippet ssc_base\n\
 	<style>\n\
 		/* ==== Page Styles ==== */\n\
 		.te-page {\n\
-			height: ${1:HEIGHT}mm;\n\
-			width: ${2:WIDTH}mm;\n\
 			position: relative;\n\
+			width: ${1:WIDTH}mm;\n\
+			height: ${2:HEIGHT}mm;\n\
 		}\n\
 \n\
 		.background-img-preset {\n\
-			height: 100%;\n\
 			width: 100%;\n\
+			height: 100%;\n\
 		}\n\
 \n\
 		/* ==== Content Block Styles ==== */\n\
