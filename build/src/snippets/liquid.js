@@ -13,7 +13,7 @@ snippet console\n\
 snippet ife\n\
 	{% if ${1:condition} %}${2}{% else %}${3}{% endif %}${0}\n\
 snippet if\n\
-	{% if ${1:condition} %}${1}{% endif %}${0}\n\
+	{% if ${1:condition} %}${2}{% endif %}${0}\n\
 snippet ifn\n\
 	{% if ${1:condition} %}\n\
 	${2}\n\
@@ -21,6 +21,7 @@ snippet ifn\n\
 snippet ssc_base\n\
 	<div class=\"te-top-vars\">\n\
 		{% include 'expert_content_branding' %}\n\
+		{% include 'default_styles_sscp2' %}\n\
 	</div>\n\
 \n\
 	<style>\n\
